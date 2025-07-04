@@ -14,12 +14,15 @@ export function Footer() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px", amount: 0.3 }}
           >
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 font-playfair">Charles Adu Tetteh</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 font-playfair">
+              Charles Adu Tetteh
+            </h3>
             <p className="text-gray-200 mb-4 font-inter font-light text-sm sm:text-base">
-              Full-Stack Developer & AWS Cloud Solutions Expert passionate about creating impactful solutions and
-              empowering others through technology.
+              Full-Stack Developer & AWS Cloud Solutions Expert passionate about
+              creating impactful solutions and empowering others through
+              technology.
             </p>
             <div className="flex space-x-4">
               {[
@@ -28,8 +31,16 @@ export function Footer() {
                   icon: Linkedin,
                   label: "LinkedIn",
                 },
-                { href: "https://github.com", icon: Github, label: "GitHub" },
-                { href: "mailto:aducharlest@gmail.com", icon: Mail, label: "Email" },
+                {
+                  href: "https://github.com/LavGlides",
+                  icon: Github,
+                  label: "GitHub",
+                },
+                {
+                  href: "mailto:aducharlest@gmail.com",
+                  icon: Mail,
+                  label: "Email",
+                },
               ].map((link, index) => (
                 <motion.a
                   key={link.label}
@@ -51,9 +62,11 @@ export function Footer() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px", amount: 0.3 }}
           >
-            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 font-playfair">Services</h4>
+            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 font-playfair">
+              Services
+            </h4>
             <ul className="space-y-2 text-gray-200 font-inter font-light text-sm sm:text-base">
               <li>Full-Stack Web Development</li>
               <li>Mobile App Development</li>
@@ -68,9 +81,11 @@ export function Footer() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px", amount: 0.3 }}
           >
-            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 font-playfair">Contact Info</h4>
+            <h4 className="text-lg sm:text-xl font-semibold text-white mb-4 font-playfair">
+              Contact Info
+            </h4>
             <div className="space-y-3 text-gray-200 font-inter font-light text-sm sm:text-base">
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
@@ -106,12 +121,13 @@ export function Footer() {
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
-          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+          viewport={{ once: true, margin: "0px", amount: 0.3 }}
           className="border-t border-slate-800/50 mt-8 pt-8 text-center"
         >
           <p className="text-gray-300 font-inter font-light text-sm sm:text-base">
-            © {currentYear} Charles Adu Tetteh. All rights reserved. Built with Next.js and Framer Motion.
+            © {currentYear} Charles Adu Tetteh. All rights reserved. Built with
+            Next.js and Framer Motion.
           </p>
         </motion.div>
       </div>

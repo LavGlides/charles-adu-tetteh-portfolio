@@ -78,7 +78,7 @@ export const createContactEmailTemplate = (data: {
               <p>This message was sent from your portfolio contact form</p>
               <p>📅 ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
               <p>
-                <a href="https://charles-adu-tetteh-portfolio.vercel.app/" class="portfolio-link">
+                <a href="https://charles-adu-tetteh.vercel.app" class="portfolio-link">
                   View Portfolio
                 </a>
               </p>
@@ -192,7 +192,7 @@ export const createServiceRequestEmailTemplate = (data: {
                 • Reply to client: <a href="mailto:${
                   data.clientEmail
                 }">Send Email</a><br>
-                • Review portfolio: <a href="https://charles-adu-tetteh-portfolio.vercel.app/">Visit Site</a><br>
+                • Review portfolio: <a href="https://charles-adu-tetteh.vercel.app">Visit Site</a><br>
                 • Schedule meeting: <a href="mailto:${
                   data.clientEmail
                 }?subject=Re: ${data.projectType} Project&body=Hi ${
@@ -205,7 +205,7 @@ export const createServiceRequestEmailTemplate = (data: {
               <p>This service request was submitted through your portfolio</p>
               <p>📅 ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
               <p>
-                <a href="https://charles-adu-tetteh-portfolio.vercel.app/" class="portfolio-link">
+                <a href="https://charles-adu-tetteh.vercel.app" class="portfolio-link">
                   View Portfolio Admin
                 </a>
               </p>

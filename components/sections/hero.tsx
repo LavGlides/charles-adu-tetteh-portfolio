@@ -3,7 +3,12 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function Hero() {
   return (
@@ -20,7 +25,11 @@ export function Hero() {
           backgroundSize: "cover",
         }}
         animate={{ y: [0, -20, 0] }}
-        transition={{ duration: 15, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        transition={{
+          duration: 15,
+          repeat: Number.POSITIVE_INFINITY,
+          ease: "easeInOut",
+        }}
       />
       {/* Background Particles with Glow Effect */}
       <div className="absolute inset-0 pointer-events-none">
@@ -105,44 +114,42 @@ export function Hero() {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 xs:px-6 sm:px-8 text-center relative z-10 w-full sm:pr-0 md:pr-32 lg:pr-40 xl:pr-48">
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="space-y-5 sm:space-y-7 md:space-y-8"
-        >
+        <div className="space-y-5 sm:space-y-7 md:space-y-8">
+          {/* Immediate visibility with faster animations */}
           <motion.h1
             className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-3 sm:mb-4 lg:mb-6 leading-tight tracking-tight font-playfair"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0.3, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.9, ease: "easeOut" }}
+            transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
           >
             Charles Adu Tetteh
           </motion.h1>
 
           <motion.p
             className="text-base sm:text-lg md:text-xl lg:text-2xl text-purple-200 mb-3 sm:mb-4 px-2 sm:px-0 font-inter font-light"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0.3, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.9, ease: "easeOut" }}
+            transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
           >
             Full-Stack Developer & AWS Cloud Solutions Architect
           </motion.p>
 
           <motion.p
             className="text-sm sm:text-base md:text-lg text-gray-200 mb-6 sm:mb-8 max-w-md xs:max-w-lg sm:max-w-xl lg:max-w-2xl mx-auto px-2 sm:px-4 leading-relaxed font-inter font-light"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0.3, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.9, ease: "easeOut" }}
+            transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
           >
-            Dynamic Computer Science graduate specializing in React, Next.js, and AWS cloud architecture. Proven expertise in delivering scalable enterprise solutions and training 300+ professionals.
+            Dynamic Computer Science graduate specializing in React, Next.js,
+            and AWS cloud architecture. Proven expertise in delivering scalable
+            enterprise solutions and training 300+ professionals.
           </motion.p>
 
           <motion.div
             className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-8 sm:mb-12 px-2 sm:px-4"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0.3, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.9, ease: "easeOut" }}
+            transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
           >
             <Button
               size="lg"
@@ -164,9 +171,9 @@ export function Hero() {
           <TooltipProvider>
             <motion.div
               className="flex justify-center space-x-4 sm:space-x-6"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0.3, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1, duration: 0.9, ease: "easeOut" }}
+              transition={{ delay: 0.5, duration: 0.4, ease: "easeOut" }}
             >
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -219,15 +226,22 @@ export function Hero() {
               </Tooltip>
             </motion.div>
           </TooltipProvider>
-        </motion.div>
+        </div>
 
         <motion.div
           className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2"
           animate={{ y: [0, 12, 0] }}
-          transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          transition={{
+            duration: 2.5,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
         >
           <a href="#about" aria-label="Scroll to About section">
-            <ArrowDown className="text-purple-200 hover:text-purple-400 transition-colors duration-300" size={24} />
+            <ArrowDown
+              className="text-purple-200 hover:text-purple-400 transition-colors duration-300"
+              size={24}
+            />
           </a>
         </motion.div>
       </div>

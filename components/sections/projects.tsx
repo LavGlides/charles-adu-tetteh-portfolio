@@ -239,8 +239,8 @@ export function Projects() {
                 </div>
 
                 {/* Content with Hover Overlay */}
-                <CardContent className="p-5 sm:p-6 relative">
-                  <div className="flex items-start justify-between mb-3">
+                <CardContent className="p-5 sm:p-6 pb-20 relative">
+                  <div className="flex items-start justify-between mb-4">
                     <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-purple-200 font-playfair transition-colors duration-300">
                       {project.title}
                     </h3>
@@ -258,11 +258,11 @@ export function Projects() {
                     </Badge>
                   </div>
 
-                  <p className="text-gray-200 mb-4 line-clamp-2 leading-relaxed font-inter font-light text-sm sm:text-base">
+                  <p className="text-gray-200 mb-5 line-clamp-2 leading-relaxed font-inter font-light text-sm sm:text-base">
                     {project.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-2 mb-6">
+                  <div className="flex flex-wrap gap-2 mb-8">
                     {project.technologies.slice(0, 3).map((tech) => (
                       <Badge
                         key={tech}
@@ -282,21 +282,20 @@ export function Projects() {
                     )}
                   </div>
 
-                  {/* Hover Overlay Buttons */}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/98 to-transparent flex items-center justify-center p-2 h-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 0, y: 10 }}
+                    className="absolute bottom-0 left-0 right-0 flex items-center justify-center p-3 h-18 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300"
+                    initial={{ opacity: 1, y: 0 }}
+                    animate={{ opacity: 1, y: 0 }}
                     whileHover={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="flex gap-3 w-full">
+                    <div className="flex gap-3 w-full px-2">
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="flex-1 border-purple-400 text-purple-200 hover:bg-purple-500/20 hover:text-white bg-slate-900/50 backdrop-blur-sm font-inter font-medium text-sm rounded-lg transition-all duration-300 shadow-lg"
+                            className="flex-1 border-purple-400 text-purple-200 hover:bg-purple-500/20 hover:text-white bg-transparent backdrop-blur-sm font-inter font-medium text-sm rounded-lg transition-all duration-300 shadow-lg py-2"
                             aria-label={`Learn more about ${project.title}`}
                           >
                             <Eye className="mr-2" size={14} />
@@ -424,7 +423,7 @@ export function Projects() {
                         variant="ghost"
                         size="sm"
                         asChild
-                        className="text-gray-200 hover:text-white hover:bg-purple-500/20 font-inter font-medium text-sm rounded-lg bg-slate-900/50 backdrop-blur-sm shadow-lg"
+                        className="text-gray-200 hover:text-white hover:bg-purple-500/20 font-inter font-medium text-sm rounded-lg bg-transparent backdrop-blur-sm shadow-lg py-2 px-3"
                         aria-label={`View ${project.title} code on GitHub`}
                       >
                         <a
@@ -435,6 +434,23 @@ export function Projects() {
                           <Github size={16} />
                         </a>
                       </Button>
+                      {project.status === "live" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          asChild
+                          className="text-gray-200 hover:text-white hover:bg-green-500/20 font-inter font-medium text-sm rounded-lg bg-transparent backdrop-blur-sm shadow-lg py-2 px-3"
+                          aria-label={`View live demo of ${project.title}`}
+                        >
+                          <a
+                            href={project.live}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink size={16} />
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </motion.div>
                 </CardContent>
