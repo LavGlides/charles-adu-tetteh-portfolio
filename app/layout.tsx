@@ -3,10 +3,14 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.PORTFOLIO_URL || "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_PORTFOLIO_URL?.startsWith("http")
+      ? process.env.NEXT_PUBLIC_PORTFOLIO_URL
+      : "http://localhost:3000"
+  ),
   title: "Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert",
   description:
-    "Dynamic Computer Science graduate with expertise in full-stack web and mobile app development, AWS cloud solutions, and technical training. Available for hire in Ghana and globally.",
+    "Skilled full-stack developer and AWS Cloud specialist with a background in Computer Science, delivering scalable web and mobile solutions. Available for hire in Ghana and globally.",
   keywords: [
     "Charles Adu Tetteh",
     "Full-Stack Developer",
@@ -48,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert",
     description:
-      "Dynamic Computer Science graduate specializing in React, Next.js, AWS cloud solutions, and technical training. Available for hire globally.",
+      "React & Next.js specialist building high-performance apps with AWS cloud integration. Hire Charles Adu Tetteh for modern software development needs. Available for hire globally.",
     url: "/",
     siteName: "Charles Adu Tetteh Portfolio",
     type: "website",
@@ -72,11 +76,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@charlesadutetteh",
-    creator: "@charlesadutetteh",
+    site: "@hon_adutette",
+    creator: "@hon_adutette",
     title: "Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert",
     description:
-      "Dynamic Computer Science graduate specializing in React, Next.js, AWS cloud solutions, and technical training. Available for hire globally.",
+      "Experienced full-stack developer with expertise in web development, AWS, and mobile-first development, based in Ghana. Available for hire globally.",
     images: [
       {
         url: "/charles_big.jpg",
@@ -89,7 +93,11 @@ export const metadata: Metadata = {
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
-    apple: { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    apple: {
+      url: "/apple-touch-icon.png",
+      sizes: "180x180",
+      type: "image/png",
+    },
     other: [
       {
         rel: "android-chrome-192x192",
@@ -113,64 +121,68 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: "Charles Adu Tetteh",
-    jobTitle: "Full-Stack Developer & AWS Cloud Expert",
-    description: "Dynamic Computer Science graduate with expertise in full-stack web and mobile app development, AWS cloud solutions, and technical training.",
-    url: process.env.PORTFOLIO_URL || "http://localhost:3000",
-    image: {
-      "@type": "ImageObject",
-      url: "/charles_big.jpg",
-      width: "1200",
-      height: "630"
-    },
-    sameAs: [
-      "https://www.linkedin.com/in/charles-adu-tetteh",
-      "https://github.com/charlesadutetteh"
-    ],
-    alumniOf: {
-      "@type": "Organization",
-      name: "University of Ghana"
-    },
-    knowsAbout: [
-      "Full-Stack Development",
-      "AWS Cloud Solutions",
-      "React",
-      "Next.js",
-      "Mobile App Development",
-      "Technical Training",
-      "JavaScript",
-      "TypeScript",
-      "Node.js",
-      "Python"
-    ],
-    hasOccupation: {
-      "@type": "Occupation",
-      name: "Software Developer",
-      occupationLocation: {
-        "@type": "Place",
-        name: "Ghana"
-      }
-    },
-    worksFor: {
-      "@type": "Organization",
-      name: "Freelance"
-    }
-  };
-
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="google-site-verification" content="REPLACE_WITH_ACTUAL_VERIFICATION_CODE" />
+        <meta name="theme-color" content="#1e293b" />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Charles Adu Tetteh",
+              jobTitle: "Full-Stack Developer & AWS Cloud Expert",
+              description:
+                "Dynamic Computer Science graduate with expertise in full-stack web and mobile app development, AWS cloud solutions, and technical training.",
+              url:
+                process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                "http://localhost:3000",
+              image: {
+                "@type": "ImageObject",
+                url: "/charles_big.jpg",
+                width: "1200",
+                height: "630",
+              },
+              sameAs: [
+                "https://www.linkedin.com/in/charles-adu-tetteh-00546a109",
+                "https://github.com/LavGlides",
+              ],
+              alumniOf: {
+                "@type": "Organization",
+                name: "Garden City University College",
+              },
+              knowsAbout: [
+                "Full-Stack Development",
+                "AWS Cloud Solutions",
+                "React",
+                "Next.js",
+                "Mobile App Development",
+                "Technical Training",
+                "JavaScript",
+                "TypeScript",
+                "Node.js",
+                "Python",
+              ],
+              hasOccupation: {
+                "@type": "Occupation",
+                name: "Software Developer",
+                occupationLocation: {
+                  "@type": "Place",
+                  name: "Ghana",
+                },
+              },
+              worksFor: {
+                "@type": "Organization",
+                name: "Freelance",
+              },
+            }),
           }}
         />
+
         <link
           rel="preload"
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500;600&display=swap"

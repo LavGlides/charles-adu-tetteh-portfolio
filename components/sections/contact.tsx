@@ -185,20 +185,24 @@ export function Contact() {
               <CardContent className="space-y-6">
                 <div className="flex items-center space-x-3">
                   <Mail className="text-purple-400" size={20} />
-                  <div>
-                    <p className="text-gray-300">aducharlest@gmail.com</p>
+                  <div className="text-gray-300">
+                    <a href="mailto:aducharlest@gmail.com">
+                      aducharlest@gmail.com
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="text-purple-400" size={20} />
-                  <div>
-                    <p className="text-gray-300">+233 541 725 256</p>
+                  <div className="text-gray-300">
+                    <a href="tel:+233541725256">
+                      +233 541 725 256
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Linkedin className="text-purple-400" size={20} />
                   <div>
-                    <a
+                    <a 
                       href="https://www.linkedin.com/in/charles-adu-tetteh-00546a109"
                       target="_blank"
                       rel="noopener noreferrer"

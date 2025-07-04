@@ -140,9 +140,8 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
           >
-            Dynamic Computer Science graduate specializing in React, Next.js,
-            and AWS cloud architecture. Proven expertise in delivering scalable
-            enterprise solutions and training 300+ professionals.
+            Experienced software engineer building performant apps with React, Next.js, and AWS. Focused on scalable architecture and cloud-first development. Proven expertise in delivering scalable
+            enterprise solutions and training many professionals.
           </motion.p>
 
           <motion.div
@@ -195,7 +194,7 @@ export function Hero() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.a
-                    href="https://github.com"
+                    href="https://github.com/LavGlides"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.3, rotate: -8 }}

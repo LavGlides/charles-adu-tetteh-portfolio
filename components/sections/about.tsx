@@ -19,7 +19,7 @@ export function About() {
 
   const achievements = [
     { icon: Users, text: "Trained 300+ individuals with 95% satisfaction" },
-    { icon: Award, text: "Improved operational efficiency by 25% at GBC" },
+    { icon: Award, text: "Improved operational efficiency by 25% at the Ghana Broadcasting Corporation (GBC)" },
     { icon: Code, text: "Built enterprise solutions for major organizations" },
     { icon: MapPin, text: "Based in Accra, Ghana" },
   ];
@@ -36,8 +36,7 @@ export function About() {
         >
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6 font-playfair">About Me</h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-200 max-w-xl sm:max-w-2xl mx-auto font-inter font-light">
-            A passionate developer with a proven track record of delivering enterprise solutions and empowering others
-            through technical training and mentorship.
+            A results-driven developer with a strong record of building scalable systems and mentoring professionals through technical training.
           </p>
         </motion.div>
 
@@ -52,8 +51,8 @@ export function About() {
                 <h3 className="text-xl sm:text-2xl font-bold text-white mb-6 font-playfair">My Journey</h3>
                 <p className="text-gray-200 mb-6 leading-relaxed font-inter font-light text-sm sm:text-base">
                   As a Computer Science graduate from Garden City University College, I've built my career around
-                  creating impactful solutions and sharing knowledge. Currently serving as IT Officer & Social Media
-                  Manager at Ghana Broadcasting Corporation, I've developed enterprise systems that serve millions of
+                  creating impactful solutions and sharing knowledge. Currently serving as IT Officer & Software Development
+                  Lead at Ghana Broadcasting Corporation, I've developed enterprise systems that serve thousands of
                   users.
                 </p>
                 <p className="text-gray-200 leading-relaxed font-inter font-light text-sm sm:text-base">
