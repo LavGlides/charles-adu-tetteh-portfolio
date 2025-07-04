@@ -21,7 +21,7 @@ export const projects: Project[] = [
     id: 1,
     title: "GBC Asset Management",
     description: "Full-stack web application for managing GBC's assets across 31 transmitter sites and 7 TV channels",
-    image: "/gbcasset",
+    image: "/gbcasset.png",
     technologies: ["React", "Next.js", "AWS DynamoDB", "CloudFormation", "TypeScript"],
     category: "fullstack",
     type: "web",
