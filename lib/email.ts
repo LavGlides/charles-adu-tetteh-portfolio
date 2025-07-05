@@ -231,6 +231,352 @@ Sent on: ${new Date().toLocaleString()}
   };
 };
 
+// Contact form confirmation email template (auto-reply to sender)
+export const createContactConfirmationTemplate = (data: {
+  name: string;
+  subject: string;
+}) => {
+  return {
+    subject: `✅ Thank you for contacting Charles Adu Tetteh - Message Received`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Message Confirmation</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8fafc; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; padding: 40px 30px; border-radius: 15px 15px 0 0; text-align: center; }
+            .content { background: white; padding: 40px 30px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+            .message-box { background: #f0f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #7c3aed; margin: 25px 0; }
+            .next-steps { background: #ecfdf5; padding: 25px; border-radius: 12px; border-left: 4px solid #059669; margin: 25px 0; }
+            .footer { background: #1e293b; color: white; padding: 30px; border-radius: 0 0 15px 15px; text-align: center; }
+            .signature { margin-top: 30px; padding-top: 20px; border-top: 2px solid #e2e8f0; font-style: italic; color: #64748b; }
+            .portfolio-link { color: #7c3aed; text-decoration: none; font-weight: bold; padding: 10px 20px; background: #f1f5f9; border-radius: 8px; display: inline-block; margin: 10px 5px; }
+            .portfolio-link:hover { background: #e2e8f0; text-decoration: none; }
+            .social-links { margin: 20px 0; }
+            .social-link { color: #7c3aed; text-decoration: none; margin: 0 10px; }
+            .highlight { color: #7c3aed; font-weight: bold; }
+            .emoji { font-size: 1.2em; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🎉 Message Received Successfully!</h1>
+              <p>Thank you for reaching out, ${data.name}!</p>
+            </div>
+            
+            <div class="content">
+              <div class="message-box">
+                <h3 style="margin-top: 0; color: #7c3aed;">✨ Your message has been received</h3>
+                <p>Hello <strong>${data.name}</strong>,</p>
+                <p>Thank you for contacting me through my portfolio! I've successfully received your message regarding "<strong>${
+                  data.subject
+                }</strong>" and I'm excited to connect with you.</p>
+              </div>
+
+              <div class="next-steps">
+                <h3 style="margin-top: 0; color: #059669;"><span class="emoji">⏰</span> What happens next?</h3>
+                <ul style="padding-left: 20px;">
+                  <li><strong>Response Time:</strong> I typically respond within <span class="highlight">24-48 hours</span> during business days</li>
+                  <li><strong>Detailed Review:</strong> I'll carefully review your message and requirements</li>
+                  <li><strong>Personal Response:</strong> You'll receive a personalized reply addressing your specific needs</li>
+                  <li><strong>Next Steps:</strong> If it's a project inquiry, I'll include relevant information about timelines and process</li>
+                </ul>
+              </div>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <h3 style="color: #64748b; margin-bottom: 20px;">While you wait, feel free to explore:</h3>
+                <a href="${
+                  process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                  "https://charles-adu-tetteh.vercel.app"
+                }/#projects" class="portfolio-link">
+                  <span class="emoji">🚀</span> View My Projects
+                </a>
+                <a href="${
+                  process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                  "https://charles-adu-tetteh.vercel.app"
+                }/#about" class="portfolio-link">
+                  <span class="emoji">👨‍💻</span> Learn About Me
+                </a>
+                <a href="${
+                  process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                  "https://charles-adu-tetteh.vercel.app"
+                }/#testimonials" class="portfolio-link">
+                  <span class="emoji">⭐</span> Read Testimonials
+                </a>
+              </div>
+
+              <div class="social-links" style="text-align: center;">
+                <p style="margin-bottom: 15px; color: #64748b;">Connect with me on social media:</p>
+                <a href="https://www.linkedin.com/in/charles-adu-tetteh-00546a109" class="social-link">LinkedIn</a> |
+                <a href="https://github.com/LavGlides" class="social-link">GitHub</a> |
+                <a href="mailto:aducharlest@gmail.com" class="social-link">Email</a>
+              </div>
+
+              <div class="signature">
+                <p><strong>Best regards,</strong></p>
+                <p><strong>Charles Adu Tetteh</strong><br>
+                Full-Stack Developer & AWS Cloud Solutions Expert<br>
+                <span class="emoji">📧</span> aducharlest@gmail.com<br>
+                <span class="emoji">📱</span> +233 541 725 256<br>
+                <span class="emoji">🌍</span> Accra, Ghana</p>
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p><span class="emoji">🤖</span> This is an automated confirmation email</p>
+              <p>📅 Sent on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+              <p style="font-size: 12px; margin-top: 15px; opacity: 0.8;">
+                Please do not reply to this email. If you need immediate assistance, 
+                contact me directly at aducharlest@gmail.com
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+    text: `
+Thank you for contacting Charles Adu Tetteh!
+
+Hello ${data.name},
+
+Your message regarding "${data.subject}" has been successfully received.
+
+What happens next:
+- Response Time: I typically respond within 24-48 hours during business days
+- Detailed Review: I'll carefully review your message and requirements  
+- Personal Response: You'll receive a personalized reply addressing your specific needs
+
+While you wait, feel free to explore my portfolio at: ${
+      process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+      "https://charles-adu-tetteh.vercel.app"
+    }
+
+Connect with me:
+- LinkedIn: https://www.linkedin.com/in/charles-adu-tetteh-00546a109
+- GitHub: https://github.com/LavGlides
+- Email: aducharlest@gmail.com
+
+Best regards,
+Charles Adu Tetteh
+Full-Stack Developer & AWS Cloud Solutions Expert
+Phone: +233 541 725 256
+Location: Accra, Ghana
+
+---
+This is an automated confirmation email sent on ${new Date().toLocaleString()}
+Please do not reply to this email. For immediate assistance, contact me directly at aducharlest@gmail.com
+    `,
+  };
+};
+
+// Service request confirmation email template (auto-reply to client)
+export const createServiceRequestConfirmationTemplate = (data: {
+  clientName: string;
+  projectType: string;
+  budget: string;
+  timeline: string;
+}) => {
+  return {
+    subject: `🚀 Service Request Confirmed - Let's Build Something Amazing Together!`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Service Request Confirmation</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8fafc; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #059669, #7c3aed); color: white; padding: 40px 30px; border-radius: 15px 15px 0 0; text-align: center; }
+            .content { background: white; padding: 40px 30px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+            .project-summary { background: #f0f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #059669; margin: 25px 0; }
+            .next-steps { background: #fef3e2; padding: 25px; border-radius: 12px; border-left: 4px solid #f59e0b; margin: 25px 0; }
+            .process-steps { background: #ecfdf5; padding: 25px; border-radius: 12px; margin: 25px 0; }
+            .footer { background: #1e293b; color: white; padding: 30px; border-radius: 0 0 15px 15px; text-align: center; }
+            .signature { margin-top: 30px; padding-top: 20px; border-top: 2px solid #e2e8f0; font-style: italic; color: #64748b; }
+            .badge { padding: 8px 16px; border-radius: 20px; font-weight: bold; margin: 5px; display: inline-block; }
+            .budget-badge { background: #059669; color: white; }
+            .timeline-badge { background: #7c3aed; color: white; }
+            .type-badge { background: #f59e0b; color: white; }
+            .portfolio-link { color: #7c3aed; text-decoration: none; font-weight: bold; padding: 10px 20px; background: #f1f5f9; border-radius: 8px; display: inline-block; margin: 10px 5px; }
+            .portfolio-link:hover { background: #e2e8f0; text-decoration: none; }
+            .highlight { color: #059669; font-weight: bold; }
+            .emoji { font-size: 1.2em; }
+            .step { margin: 15px 0; padding: 15px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #059669; }
+            .step-number { background: #059669; color: white; width: 25px; height: 25px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🎯 Service Request Received!</h1>
+              <p>Thank you for choosing me for your project, ${
+                data.clientName
+              }!</p>
+            </div>
+            
+            <div class="content">
+              <div class="project-summary">
+                <h3 style="margin-top: 0; color: #059669;"><span class="emoji">📋</span> Project Summary</h3>
+                <p>Hello <strong>${data.clientName}</strong>,</p>
+                <p>I'm excited about the opportunity to work on your <strong>${
+                  data.projectType
+                }</strong> project! Here's a summary of your request:</p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                  <span class="badge type-badge"><span class="emoji">🛠️</span> ${
+                    data.projectType
+                  }</span>
+                  <span class="badge budget-badge"><span class="emoji">💰</span> ${
+                    data.budget
+                  }</span>
+                  <span class="badge timeline-badge"><span class="emoji">⏱️</span> ${
+                    data.timeline
+                  }</span>
+                </div>
+              </div>
+
+              <div class="next-steps">
+                <h3 style="margin-top: 0; color: #f59e0b;"><span class="emoji">⚡</span> Immediate Next Steps</h3>
+                <ul style="padding-left: 20px;">
+                  <li><strong>Project Review:</strong> I'll analyze your requirements in detail within the next <span class="highlight">24 hours</span></li>
+                  <li><strong>Initial Consultation:</strong> I'll reach out to schedule a call/meeting to discuss your vision</li>
+                  <li><strong>Custom Proposal:</strong> You'll receive a detailed proposal with timeline, milestones, and technical approach</li>
+                  <li><strong>Q&A Session:</strong> We'll address any questions and finalize project details</li>
+                </ul>
+              </div>
+
+              <div class="process-steps">
+                <h3 style="margin-top: 0; color: #059669;"><span class="emoji">🚀</span> My Development Process</h3>
+                
+                <div class="step">
+                  <span class="step-number">1</span>
+                  <strong>Discovery & Planning</strong><br>
+                  <small>Requirements gathering, technical architecture, and project roadmap</small>
+                </div>
+                
+                <div class="step">
+                  <span class="step-number">2</span>
+                  <strong>Design & Prototyping</strong><br>
+                  <small>UI/UX design, wireframes, and interactive prototypes</small>
+                </div>
+                
+                <div class="step">
+                  <span class="step-number">3</span>
+                  <strong>Development & Testing</strong><br>
+                  <small>Agile development with regular updates and quality assurance</small>
+                </div>
+                
+                <div class="step">
+                  <span class="step-number">4</span>
+                  <strong>Deployment & Support</strong><br>
+                  <small>Production deployment, training, and ongoing maintenance</small>
+                </div>
+              </div>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <h3 style="color: #64748b; margin-bottom: 20px;">Explore my expertise:</h3>
+                <a href="${
+                  process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                  "https://charles-adu-tetteh.vercel.app"
+                }/#projects" class="portfolio-link">
+                  <span class="emoji">💼</span> Portfolio Projects
+                </a>
+                <a href="${
+                  process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                  "https://charles-adu-tetteh.vercel.app"
+                }/#testimonials" class="portfolio-link">
+                  <span class="emoji">⭐</span> Client Reviews
+                </a>
+                <a href="${
+                  process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                  "https://charles-adu-tetteh.vercel.app"
+                }/#about" class="portfolio-link">
+                  <span class="emoji">🎯</span> My Expertise
+                </a>
+              </div>
+
+              <div style="background: #fef3e2; padding: 20px; border-radius: 12px; text-align: center; margin: 25px 0;">
+                <h4 style="margin-top: 0; color: #f59e0b;"><span class="emoji">📞</span> Need to discuss urgently?</h4>
+                <p style="margin-bottom: 10px;">Feel free to reach out directly:</p>
+                <p><strong>📧 Email:</strong> aducharlest@gmail.com</p>
+                <p><strong>📱 Phone:</strong> +233 541 725 256</p>
+                <p><strong>💼 LinkedIn:</strong> <a href="https://www.linkedin.com/in/charles-adu-tetteh-00546a109" style="color: #f59e0b;">Charles Adu Tetteh</a></p>
+              </div>
+
+              <div class="signature">
+                <p><strong>Looking forward to building something amazing together!</strong></p>
+                <p><strong>Charles Adu Tetteh</strong><br>
+                Full-Stack Developer & AWS Cloud Solutions Expert<br>
+                <span class="emoji">🏆</span> Delivering scalable solutions since 2020<br>
+                <span class="emoji">🌍</span> Based in Accra, Ghana • Available globally</p>
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p><span class="emoji">🤖</span> This is an automated confirmation email</p>
+              <p>📅 Sent on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+              <p style="font-size: 12px; margin-top: 15px; opacity: 0.8;">
+                Please do not reply to this email. For direct communication, 
+                contact me at aducharlest@gmail.com or call +233 541 725 256
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+    text: `
+🚀 Service Request Confirmed - Thank you ${data.clientName}!
+
+I'm excited about the opportunity to work on your ${data.projectType} project!
+
+PROJECT SUMMARY:
+- Type: ${data.projectType}
+- Budget: ${data.budget}  
+- Timeline: ${data.timeline}
+
+IMMEDIATE NEXT STEPS:
+1. Project Review: I'll analyze your requirements within 24 hours
+2. Initial Consultation: I'll reach out to schedule a call/meeting
+3. Custom Proposal: You'll receive a detailed proposal with timeline and approach
+4. Q&A Session: We'll address questions and finalize project details
+
+MY DEVELOPMENT PROCESS:
+1. Discovery & Planning - Requirements and architecture
+2. Design & Prototyping - UI/UX design and wireframes  
+3. Development & Testing - Agile development with regular updates
+4. Deployment & Support - Production deployment and maintenance
+
+CONTACT ME DIRECTLY:
+📧 Email: aducharlest@gmail.com
+📱 Phone: +233 541 725 256
+💼 LinkedIn: https://www.linkedin.com/in/charles-adu-tetteh-00546a109
+
+Portfolio: ${
+      process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+      "https://charles-adu-tetteh.vercel.app"
+    }
+
+Looking forward to building something amazing together!
+
+Best regards,
+Charles Adu Tetteh
+Full-Stack Developer & AWS Cloud Solutions Expert
+Based in Accra, Ghana • Available globally
+
+---
+This is an automated confirmation email sent on ${new Date().toLocaleString()}
+Please do not reply to this email. For direct communication, contact me at aducharlest@gmail.com
+    `,
+  };
+};
+
 // Send email function
 export const sendEmail = async (options: {
   to: string;
@@ -251,6 +597,90 @@ export const sendEmail = async (options: {
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error("Email sending failed:", error);
+    return { success: false, error };
+  }
+};
+
+// Send contact form emails (notification + confirmation)
+export const sendContactEmails = async (data: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}) => {
+  try {
+    // Send notification email to you
+    const notificationTemplate = createContactEmailTemplate(data);
+    const notificationResult = await sendEmail({
+      to: process.env.EMAIL_USER!,
+      subject: notificationTemplate.subject,
+      html: notificationTemplate.html,
+      text: notificationTemplate.text,
+    });
+
+    // Send confirmation email to the sender
+    const confirmationTemplate = createContactConfirmationTemplate({
+      name: data.name,
+      subject: data.subject,
+    });
+    const confirmationResult = await sendEmail({
+      to: data.email,
+      subject: confirmationTemplate.subject,
+      html: confirmationTemplate.html,
+      text: confirmationTemplate.text,
+    });
+
+    return {
+      success: notificationResult.success && confirmationResult.success,
+      notification: notificationResult,
+      confirmation: confirmationResult,
+    };
+  } catch (error) {
+    console.error("Contact emails sending failed:", error);
+    return { success: false, error };
+  }
+};
+
+// Send service request emails (notification + confirmation)
+export const sendServiceRequestEmails = async (data: {
+  clientName: string;
+  clientEmail: string;
+  projectType: string;
+  budget: string;
+  timeline: string;
+  projectDescription: string;
+}) => {
+  try {
+    // Send notification email to you
+    const notificationTemplate = createServiceRequestEmailTemplate(data);
+    const notificationResult = await sendEmail({
+      to: process.env.EMAIL_USER!,
+      subject: notificationTemplate.subject,
+      html: notificationTemplate.html,
+      text: notificationTemplate.text,
+    });
+
+    // Send confirmation email to the client
+    const confirmationTemplate = createServiceRequestConfirmationTemplate({
+      clientName: data.clientName,
+      projectType: data.projectType,
+      budget: data.budget,
+      timeline: data.timeline,
+    });
+    const confirmationResult = await sendEmail({
+      to: data.clientEmail,
+      subject: confirmationTemplate.subject,
+      html: confirmationTemplate.html,
+      text: confirmationTemplate.text,
+    });
+
+    return {
+      success: notificationResult.success && confirmationResult.success,
+      notification: notificationResult,
+      confirmation: confirmationResult,
+    };
+  } catch (error) {
+    console.error("Service request emails sending failed:", error);
     return { success: false, error };
   }
 };

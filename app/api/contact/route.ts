@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { sendEmail, createContactEmailTemplate } from "@/lib/email";
+import { sendContactEmails } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,24 +14,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create email template
-    const emailTemplate = createContactEmailTemplate({
+    // Send both notification and confirmation emails
+    const emailResult = await sendContactEmails({
       name,
       email,
       subject,
       message,
     });
 
-    // Send email to your inbox
-    const emailResult = await sendEmail({
-      to: process.env.EMAIL_USER || "aducharlest@gmail.com",
-      subject: emailTemplate.subject,
-      html: emailTemplate.html,
-      text: emailTemplate.text,
-    });
-
     if (!emailResult.success) {
-      console.error("Failed to send email:", emailResult.error);
+      console.error("Failed to send emails:", emailResult.error);
       return NextResponse.json(
         { success: false, message: "Failed to send email" },
         { status: 500 }
@@ -43,12 +35,14 @@ export async function POST(request: NextRequest) {
       name,
       email,
       subject,
-      messageId: emailResult.messageId,
+      notification: emailResult.notification?.messageId,
+      confirmation: emailResult.confirmation?.messageId,
     });
 
     return NextResponse.json({
       success: true,
-      message: "Message sent successfully! I'll get back to you soon.",
+      message:
+        "Thank you for your message! I've received it and you should receive a confirmation email shortly. I'll get back to you within 24-48 hours.",
     });
   } catch (error) {
     console.error("Contact form error:", error);

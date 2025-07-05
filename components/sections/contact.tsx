@@ -20,6 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, MapPin, Send, Briefcase, Linkedin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import * as analytics from "@/lib/analytics";
 
 export function Contact() {
   const ref = useRef(null);
@@ -37,6 +38,9 @@ export function Contact() {
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Track form submission attempt
+    analytics.trackFormSubmission("contact", false);
 
     try {
       const formData = new FormData(e.currentTarget);
@@ -58,6 +62,9 @@ export function Contact() {
       const result = await response.json();
 
       if (result.success) {
+        // Track successful form submission
+        analytics.trackFormSubmission("contact", true);
+
         toast({
           title: "Message Sent! ✅",
           description: result.message,
@@ -71,6 +78,9 @@ export function Contact() {
         throw new Error(result.message);
       }
     } catch (error) {
+      // Track form submission error
+      analytics.trackFormSubmission("contact", false);
+
       toast({
         title: "Error ❌",
         description:
@@ -87,6 +97,9 @@ export function Contact() {
   const handleServiceSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Track service request submission attempt
+    analytics.trackFormSubmission("service_request", false);
 
     try {
       const formData = new FormData(e.currentTarget);
@@ -122,6 +135,9 @@ export function Contact() {
       const result = await response.json();
 
       if (result.success) {
+        // Track successful service request submission
+        analytics.trackFormSubmission("service_request", true);
+
         toast({
           title: "Service Request Submitted! 🚀",
           description: result.message,
@@ -194,15 +210,13 @@ export function Contact() {
                 <div className="flex items-center space-x-3">
                   <Phone className="text-purple-400" size={20} />
                   <div className="text-gray-300">
-                    <a href="tel:+233541725256">
-                      +233 541 725 256
-                    </a>
+                    <a href="tel:+233541725256">+233 541 725 256</a>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Linkedin className="text-purple-400" size={20} />
                   <div>
-                    <a 
+                    <a
                       href="https://www.linkedin.com/in/charles-adu-tetteh-00546a109"
                       target="_blank"
                       rel="noopener noreferrer"

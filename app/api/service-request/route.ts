@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { sendEmail, createServiceRequestEmailTemplate } from "@/lib/email";
+import { sendServiceRequestEmails } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create email template
-    const emailTemplate = createServiceRequestEmailTemplate({
+    // Send both notification and confirmation emails
+    const emailResult = await sendServiceRequestEmails({
       clientName,
       clientEmail,
       projectType,
@@ -38,16 +38,11 @@ export async function POST(request: NextRequest) {
       projectDescription,
     });
 
-    // Send email to your inbox
-    const emailResult = await sendEmail({
-      to: process.env.EMAIL_USER || "aducharlest@gmail.com",
-      subject: emailTemplate.subject,
-      html: emailTemplate.html,
-      text: emailTemplate.text,
-    });
-
     if (!emailResult.success) {
-      console.error("Failed to send service request email:", emailResult.error);
+      console.error(
+        "Failed to send service request emails:",
+        emailResult.error
+      );
       return NextResponse.json(
         { success: false, message: "Failed to send service request" },
         { status: 500 }
@@ -55,19 +50,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Log the successful submission
+    // Log the successful submission
     console.log("Service request processed:", {
       clientName,
       clientEmail,
       projectType,
       budget,
       timeline,
-      messageId: emailResult.messageId,
+      notification: emailResult.notification?.messageId,
+      confirmation: emailResult.confirmation?.messageId,
     });
 
     return NextResponse.json({
       success: true,
       message:
-        "Service request submitted successfully! I'll review your project details and get back to you within 24 hours.",
+        "Service request submitted successfully! You should receive a confirmation email shortly. I'll review your project details and get back to you within 24 hours.",
     });
   } catch (error) {
     console.error("Service request error:", error);

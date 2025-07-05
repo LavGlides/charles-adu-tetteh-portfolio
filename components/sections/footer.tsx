@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import * as analytics from "@/lib/analytics";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -21,8 +22,8 @@ export function Footer() {
                 Charles Adu Tetteh
               </h3>
               <p className="text-gray-200 mb-4 font-inter font-light text-sm sm:text-base">
-                Full-Stack Developer & AWS Cloud Solutions Expert passionate about
-                creating impactful solutions and empowering others through
+                Full-Stack Developer & AWS Cloud Solutions Expert passionate
+                about creating impactful solutions and empowering others through
                 technology.
               </p>
               <div className="flex space-x-4">
@@ -48,6 +49,7 @@ export function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => analytics.trackSocialClick(link.label)}
                     whileHover={{ scale: 1.2, y: -2, color: "#c084fc" }}
                     transition={{ duration: 0.3 }}
                     className="text-gray-300 hover:text-purple-400 font-inter font-medium text-sm sm:text-base"
@@ -133,8 +135,8 @@ export function Footer() {
             className="border-t border-slate-800/50 mt-8 pt-8 text-center"
           >
             <p className="text-gray-300 font-inter font-light text-sm sm:text-base">
-              © {currentYear} Charles Adu Tetteh. All rights reserved. Built with
-              Next.js and Framer Motion.
+              © {currentYear} Charles Adu Tetteh. All rights reserved. Built
+              with Next.js and Framer Motion.
             </p>
           </motion.div>
         </div>

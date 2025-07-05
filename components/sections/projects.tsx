@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { projects } from "@/data/projects";
+import * as analytics from "@/lib/analytics";
 
 export function Projects() {
   const ref = useRef(null);
@@ -297,6 +298,7 @@ export function Projects() {
                             size="sm"
                             className="flex-1 border-purple-400 text-purple-200 hover:bg-purple-500/20 hover:text-white bg-transparent backdrop-blur-sm font-inter font-medium text-sm rounded-lg transition-all duration-300 shadow-lg py-2"
                             aria-label={`Learn more about ${project.title}`}
+                            onClick={() => analytics.trackProjectView(project.title)}
                           >
                             <Eye className="mr-2" size={14} />
                             Learn More
@@ -430,6 +432,7 @@ export function Projects() {
                           href={project.github}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() => analytics.trackButtonClick("GitHub", `Project: ${project.title}`)}
                         >
                           <Github size={16} />
                         </a>
@@ -446,7 +449,9 @@ export function Projects() {
                             href={project.live}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => analytics.trackButtonClick("Live Demo", `Project: ${project.title}`)}
                           >
+                          
                             <ExternalLink size={16} />
                           </a>
                         </Button>
