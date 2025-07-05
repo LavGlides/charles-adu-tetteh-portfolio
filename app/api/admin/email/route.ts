@@ -6,12 +6,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { to, subject, message, messageId } = body;
 
-    console.log("Sending admin reply email:", {
-      to,
-      subject,
-      messageId,
-      emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS)
-    });
 
     // Check if email service is configured
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {

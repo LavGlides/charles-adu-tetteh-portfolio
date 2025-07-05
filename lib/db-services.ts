@@ -28,7 +28,6 @@ export class ContactMessageService {
         },
       });
 
-      console.log("✅ Contact message saved to database:", contactMessage.id);
       return contactMessage;
     } catch (error) {
       console.error("❌ Failed to save contact message:", error);
@@ -167,7 +166,7 @@ export class ServiceRequestService {
         },
       });
 
-      console.log("✅ Service request saved to database:", serviceRequest.id);
+      
       return serviceRequest;
     } catch (error) {
       console.error("❌ Failed to save service request:", error);
@@ -368,7 +367,6 @@ export class TestimonialService {
         },
       });
 
-      console.log("✅ Testimonial saved to database:", testimonial.id);
       return testimonial;
     } catch (error) {
       console.error("❌ Failed to save testimonial:", error);
@@ -439,7 +437,6 @@ export class TestimonialService {
         data,
       });
 
-      console.log("✅ Testimonial updated:", testimonial.id);
       return testimonial;
     } catch (error) {
       console.error("❌ Failed to update testimonial:", error);
@@ -454,7 +451,7 @@ export class TestimonialService {
         where: { id },
       });
 
-      console.log("✅ Testimonial deleted:", id);
+      
       return { success: true };
     } catch (error) {
       console.error("❌ Failed to delete testimonial:", error);
@@ -470,7 +467,7 @@ export class TestimonialService {
         data: { isApproved: true, updatedAt: new Date() },
       });
 
-      console.log("✅ Testimonial approved:", testimonial.id);
+     
       return testimonial;
     } catch (error) {
       console.error("❌ Failed to approve testimonial:", error);
@@ -486,10 +483,7 @@ export class TestimonialService {
         data: { featured, updatedAt: new Date() },
       });
 
-      console.log(
-        `✅ Testimonial ${featured ? "featured" : "unfeatured"}:`,
-        testimonial.id
-      );
+      
       return testimonial;
     } catch (error) {
       console.error("❌ Failed to set featured status:", error);
@@ -531,7 +525,6 @@ export class AnalyticsService {
   }) {
     try {
       await prisma.pageView.create({ data });
-      console.log("✅ Page view tracked:", data.page);
     } catch (error) {
       console.error("❌ Failed to track page view:", error);
     }

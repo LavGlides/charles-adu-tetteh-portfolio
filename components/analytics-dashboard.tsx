@@ -67,8 +67,6 @@ export function AnalyticsDashboard() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Analytics data received:", data);
-
           // Map the real data to analytics format
           setAnalytics({
             visitors: data.stats?.totalMessages || 0,

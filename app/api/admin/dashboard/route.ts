@@ -1,15 +1,103 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database";
+import { z } from "zod";
+import { Prisma, ServiceStatus, Priority, ProjectStatus } from "@prisma/client";
 
-// GET /api/admin/dashboard - Get dashboard statistics
+// Define enums for actions (not schema-related, so kept as is)
+enum GetAction {
+  STATS = "stats",
+  MESSAGES = "messages",
+  REQUESTS = "requests",
+  TESTIMONIALS = "testimonials",
+  PROJECTS = "projects",
+}
+
+enum PostAction {
+  MARK_MESSAGE_READ = "mark-message-read",
+  MARK_MESSAGE_REPLIED = "mark-message-replied",
+  UPDATE_REQUEST_STATUS = "update-request-status",
+  UPDATE_REQUEST_PRIORITY = "update-request-priority",
+  APPROVE_TESTIMONIAL = "approve-testimonial",
+  REJECT_TESTIMONIAL = "reject-testimonial",
+  FEATURE_TESTIMONIAL = "feature-testimonial",
+  UPDATE_PROJECT_STATUS = "update-project-status",
+}
+
+// Zod schemas for query parameters
+const PaginationSchema = z.object({
+  page: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => !isNaN(val) && val >= 1, { message: "Page must be a positive integer" })
+    .default("1"),
+  limit: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .refine((val) => !isNaN(val) && val >= 1 && val <= 100, { message: "Limit must be between 1 and 100" })
+    .default("10"),
+});
+
+const MessagesQuerySchema = PaginationSchema.extend({
+  isRead: z.enum(["true", "false"]).optional().transform((val) => val === "true" ? true : val === "false" ? false : undefined),
+});
+
+const RequestsQuerySchema = PaginationSchema.extend({
+  status: z.enum(Object.values(ServiceStatus) as [string, ...string[]]).optional(),
+  priority: z.enum(Object.values(Priority) as [string, ...string[]]).optional(),
+});
+
+const TestimonialsQuerySchema = PaginationSchema.extend({
+  approved: z.enum(["true", "false"]).optional().transform((val) => val === "true" ? true : val === "false" ? false : undefined),
+});
+
+const ProjectsQuerySchema = PaginationSchema.extend({
+  status: z.enum(Object.values(ProjectStatus) as [string, ...string[]]).optional(),
+});
+
+// Zod schemas for POST request body
+const PostBodySchema = z.object({
+  action: z.enum([
+    PostAction.MARK_MESSAGE_READ,
+    PostAction.MARK_MESSAGE_REPLIED,
+    PostAction.UPDATE_REQUEST_STATUS,
+    PostAction.UPDATE_REQUEST_PRIORITY,
+    PostAction.APPROVE_TESTIMONIAL,
+    PostAction.REJECT_TESTIMONIAL,
+    PostAction.FEATURE_TESTIMONIAL,
+    PostAction.UPDATE_PROJECT_STATUS,
+  ]),
+  id: z.string().cuid(),
+  data: z.record(z.any()).optional(),
+});
+
+const MarkMessageRepliedSchema = z.object({
+  replyNotes: z.string().nullable().optional(),
+});
+
+const UpdateRequestStatusSchema = z.object({
+  status: z.enum(Object.values(ServiceStatus) as [string, ...string[]]),
+});
+
+const UpdateRequestPrioritySchema = z.object({
+  priority: z.enum(Object.values(Priority) as [string, ...string[]]).nullable().optional(),
+});
+
+const FeatureTestimonialSchema = z.object({
+  featured: z.boolean(),
+});
+
+const UpdateProjectStatusSchema = z.object({
+  status: z.enum(Object.values(ProjectStatus) as [string, ...string[]]),
+});
+
+// GET Handler
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const action = searchParams.get("action") || "stats";
+    const action = (searchParams.get("action") || GetAction.STATS) as GetAction;
 
     switch (action) {
-      case "stats":
-        // Get dashboard statistics using direct Prisma queries
+      case GetAction.STATS:
         const [
           totalMessages,
           unreadMessages,
@@ -23,11 +111,11 @@ export async function GET(request: NextRequest) {
           prisma.contactMessage.count(),
           prisma.contactMessage.count({ where: { isRead: false } }),
           prisma.serviceRequest.count(),
-          prisma.serviceRequest.count({ where: { status: "PENDING" } }),
+          prisma.serviceRequest.count({ where: { status: ServiceStatus.PENDING } }),
           prisma.testimonial.count(),
           prisma.testimonial.count({ where: { isApproved: false } }),
           prisma.project.count(),
-          prisma.project.count({ where: { status: "DEPLOYED" } }),
+          prisma.project.count({ where: { status: ProjectStatus.DEPLOYED } }),
         ]);
 
         return NextResponse.json({
@@ -44,21 +132,17 @@ export async function GET(request: NextRequest) {
           },
         });
 
-      case "messages":
-        const page = parseInt(searchParams.get("page") || "1");
-        const limit = parseInt(searchParams.get("limit") || "10");
+      case GetAction.MESSAGES:
+        const { page, limit, isRead } = MessagesQuerySchema.parse({
+          page: searchParams.get("page"),
+          limit: searchParams.get("limit"),
+          isRead: searchParams.get("isRead"),
+        });
         const skip = (page - 1) * limit;
-        const isRead =
-          searchParams.get("isRead") === "true"
-            ? true
-            : searchParams.get("isRead") === "false"
-            ? false
-            : undefined;
 
-        const whereClause: any = {};
-        if (isRead !== undefined) {
-          whereClause.isRead = isRead;
-        }
+        const whereClause: Prisma.ContactMessageWhereInput = {
+          isRead,
+        };
 
         const [messages, total] = await Promise.all([
           prisma.contactMessage.findMany({
@@ -66,6 +150,16 @@ export async function GET(request: NextRequest) {
             orderBy: { createdAt: "desc" },
             skip,
             take: limit,
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              subject: true,
+              message: true,
+              isRead: true,
+              isReplied: true,
+              createdAt: true,
+            },
           }),
           prisma.contactMessage.count({ where: whereClause }),
         ]);
@@ -75,16 +169,19 @@ export async function GET(request: NextRequest) {
           data: { messages, total, page, limit },
         });
 
-      case "requests":
-        const requestsPage = parseInt(searchParams.get("page") || "1");
-        const requestsLimit = parseInt(searchParams.get("limit") || "10");
+      case GetAction.REQUESTS:
+        const { page: requestsPage, limit: requestsLimit, status, priority } = RequestsQuerySchema.parse({
+          page: searchParams.get("page"),
+          limit: searchParams.get("limit"),
+          status: searchParams.get("status"),
+          priority: searchParams.get("priority"),
+        });
         const requestsSkip = (requestsPage - 1) * requestsLimit;
-        const status = searchParams.get("status") || undefined;
-        const priority = searchParams.get("priority") || undefined;
 
-        const requestsWhere: any = {};
-        if (status) requestsWhere.status = status;
-        if (priority) requestsWhere.priority = priority;
+        const requestsWhere: Prisma.ServiceRequestWhereInput = {
+          status: status as ServiceStatus | undefined,
+          priority: priority as Priority | undefined,
+        };
 
         const [requests, requestsTotal] = await Promise.all([
           prisma.serviceRequest.findMany({
@@ -92,6 +189,18 @@ export async function GET(request: NextRequest) {
             orderBy: { createdAt: "desc" },
             skip: requestsSkip,
             take: requestsLimit,
+            select: {
+              id: true,
+              clientName: true,
+              clientEmail: true,
+              projectType: true,
+              budget: true,
+              timeline: true,
+              projectDescription: true,
+              status: true,
+              priority: true,
+              createdAt: true,
+            },
           }),
           prisma.serviceRequest.count({ where: requestsWhere }),
         ]);
@@ -106,19 +215,17 @@ export async function GET(request: NextRequest) {
           },
         });
 
-      case "testimonials":
-        const testimonialsPage = parseInt(searchParams.get("page") || "1");
-        const testimonialsLimit = parseInt(searchParams.get("limit") || "10");
+      case GetAction.TESTIMONIALS:
+        const { page: testimonialsPage, limit: testimonialsLimit, approved } = TestimonialsQuerySchema.parse({
+          page: searchParams.get("page"),
+          limit: searchParams.get("limit"),
+          approved: searchParams.get("approved"),
+        });
         const testimonialsSkip = (testimonialsPage - 1) * testimonialsLimit;
-        const approved =
-          searchParams.get("approved") === "true"
-            ? true
-            : searchParams.get("approved") === "false"
-            ? false
-            : undefined;
 
-        const testimonialsWhere: any = {};
-        if (approved !== undefined) testimonialsWhere.isApproved = approved;
+        const testimonialsWhere: Prisma.TestimonialWhereInput = {
+          isApproved: approved,
+        };
 
         const [testimonials, testimonialsTotal] = await Promise.all([
           prisma.testimonial.findMany({
@@ -126,6 +233,19 @@ export async function GET(request: NextRequest) {
             orderBy: { createdAt: "desc" },
             skip: testimonialsSkip,
             take: testimonialsLimit,
+            select: {
+              id: true,
+              clientName: true,
+              clientTitle: true,
+              clientCompany: true,
+              clientEmail: true,
+              testimonial: true,
+              rating: true,
+              serviceType: true,
+              isApproved: true,
+              featured: true,
+              createdAt: true,
+            },
           }),
           prisma.testimonial.count({ where: testimonialsWhere }),
         ]);
@@ -140,14 +260,17 @@ export async function GET(request: NextRequest) {
           },
         });
 
-      case "projects":
-        const projectsPage = parseInt(searchParams.get("page") || "1");
-        const projectsLimit = parseInt(searchParams.get("limit") || "10");
+      case GetAction.PROJECTS:
+        const { page: projectsPage, limit: projectsLimit, status: projectStatus } = ProjectsQuerySchema.parse({
+          page: searchParams.get("page"),
+          limit: searchParams.get("limit"),
+          status: searchParams.get("status"),
+        });
         const projectsSkip = (projectsPage - 1) * projectsLimit;
-        const projectStatus = searchParams.get("status") || undefined;
 
-        const projectsWhere: any = {};
-        if (projectStatus) projectsWhere.status = projectStatus;
+        const projectsWhere: Prisma.ProjectWhereInput = {
+          status: projectStatus as ProjectStatus | undefined,
+        };
 
         const [projects, projectsTotal] = await Promise.all([
           prisma.project.findMany({
@@ -155,6 +278,20 @@ export async function GET(request: NextRequest) {
             orderBy: { createdAt: "desc" },
             skip: projectsSkip,
             take: projectsLimit,
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              shortDescription: true,
+              technologies: true,
+              category: true,
+              status: true,
+              featured: true,
+              githubUrl: true,
+              liveUrl: true,
+              imageUrl: true,
+              createdAt: true,
+            },
           }),
           prisma.project.count({ where: projectsWhere }),
         ]);
@@ -171,12 +308,18 @@ export async function GET(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { success: false, message: "Invalid action" },
+          { success: false, message: `Invalid action: ${action}` },
           { status: 400 }
         );
     }
   } catch (error) {
     console.error("Admin dashboard API error:", error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { success: false, message: "Invalid query parameters", errors: error.errors },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }
@@ -184,76 +327,87 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/dashboard - Update records
+// POST Handler
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, id, data } = body;
+    const { action, id, data } = PostBodySchema.parse(body);
 
     switch (action) {
-      case "mark-message-read":
+      case PostAction.MARK_MESSAGE_READ:
         await prisma.contactMessage.update({
           where: { id },
           data: { isRead: true },
         });
         return NextResponse.json({ success: true });
 
-      case "mark-message-replied":
+      case PostAction.MARK_MESSAGE_REPLIED:
+        const repliedData = MarkMessageRepliedSchema.parse(data);
         await prisma.contactMessage.update({
           where: { id },
-          data: { isReplied: true, replyNotes: data.replyNotes },
+          data: { isReplied: true, replyNotes: repliedData.replyNotes },
         });
         return NextResponse.json({ success: true });
 
-      case "update-request-status":
+      case PostAction.UPDATE_REQUEST_STATUS:
+        const statusData = UpdateRequestStatusSchema.parse(data);
         await prisma.serviceRequest.update({
           where: { id },
-          data: { status: data.status },
+          data: { status: statusData.status as ServiceStatus },
         });
         return NextResponse.json({ success: true });
 
-      case "update-request-priority":
+      case PostAction.UPDATE_REQUEST_PRIORITY:
+        const priorityData = UpdateRequestPrioritySchema.parse(data);
         await prisma.serviceRequest.update({
           where: { id },
-          data: { priority: data.priority },
+          data: { priority: priorityData.priority ? (priorityData.priority as Priority) : undefined },
         });
         return NextResponse.json({ success: true });
 
-      case "approve-testimonial":
+      case PostAction.APPROVE_TESTIMONIAL:
         await prisma.testimonial.update({
           where: { id },
           data: { isApproved: true },
         });
         return NextResponse.json({ success: true });
 
-      case "reject-testimonial":
+      case PostAction.REJECT_TESTIMONIAL:
         await prisma.testimonial.delete({
           where: { id },
         });
         return NextResponse.json({ success: true });
 
-      case "feature-testimonial":
+      case PostAction.FEATURE_TESTIMONIAL:
+        const featureData = FeatureTestimonialSchema.parse(data);
         await prisma.testimonial.update({
           where: { id },
-          data: { featured: data.featured },
+          data: { featured: featureData.featured },
         });
         return NextResponse.json({ success: true });
 
-      case "update-project-status":
+      case PostAction.UPDATE_PROJECT_STATUS:
+        const projectData = UpdateProjectStatusSchema.parse(data);
         await prisma.project.update({
           where: { id },
-          data: { status: data.status },
+          data: { status: projectData.status as ProjectStatus },
         });
         return NextResponse.json({ success: true });
 
       default:
         return NextResponse.json(
-          { success: false, message: "Invalid action" },
+          { success: false, message: `Invalid action: ${action}` },
           { status: 400 }
         );
     }
   } catch (error) {
     console.error("Admin dashboard POST error:", error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { success: false, message: "Invalid request body", errors: error.errors },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

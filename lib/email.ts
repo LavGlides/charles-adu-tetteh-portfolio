@@ -879,7 +879,7 @@ export const sendEmail = async (options: {
       text: options.text,
     });
 
-    console.log("Email sent: %s", info.messageId);
+    
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error("Email sending failed:", error);

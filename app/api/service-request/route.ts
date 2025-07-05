@@ -98,18 +98,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log the successful submission
-    console.log("Service request processed:", {
-      id: savedRequest?.id,
-      clientName: sanitizedData.clientName,
-      clientEmail: sanitizedData.clientEmail,
-      projectType: sanitizedData.projectType,
-      budget: sanitizedData.budget,
-      timeline: sanitizedData.timeline,
-      ipAddress,
-      notification: emailResult.notification?.messageId,
-      confirmation: emailResult.confirmation?.messageId,
-    });
+   
 
     return NextResponse.json({
       success: true,

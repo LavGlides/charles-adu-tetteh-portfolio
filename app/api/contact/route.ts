@@ -73,16 +73,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log the successful submission
-    console.log("Contact form submission processed:", {
-      id: savedMessage?.id,
-      name: sanitizedData.name,
-      email: sanitizedData.email,
-      subject: sanitizedData.subject,
-      ipAddress,
-      notification: emailResult.notification?.messageId,
-      confirmation: emailResult.confirmation?.messageId,
-    });
 
     return NextResponse.json({
       success: true,

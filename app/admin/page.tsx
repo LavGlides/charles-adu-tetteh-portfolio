@@ -493,7 +493,6 @@ export default function AdminPage() {
 
       if (statsRes && statsRes.ok) {
         const statsData = await statsRes.json();
-        console.log("Stats data:", statsData);
         setStats(
           statsData.stats || {
             totalMessages: 0,
@@ -512,7 +511,6 @@ export default function AdminPage() {
 
       if (messagesRes && messagesRes.ok) {
         const messagesData = await messagesRes.json();
-        console.log("Messages data:", messagesData);
         setMessages(messagesData.data?.messages || []);
       } else {
         console.error("Messages API failed");
@@ -521,7 +519,6 @@ export default function AdminPage() {
 
       if (requestsRes && requestsRes.ok) {
         const requestsData = await requestsRes.json();
-        console.log("Requests data:", requestsData);
         setServiceRequests(requestsData.data?.requests || []);
       } else {
         console.error("Service requests API failed");
@@ -530,7 +527,6 @@ export default function AdminPage() {
 
       if (projectsRes && projectsRes.ok) {
         const projectsData = await projectsRes.json();
-        console.log("Projects data:", projectsData);
         setProjects(projectsData.data?.projects || []);
       } else {
         console.error("Projects API failed");
@@ -539,7 +535,6 @@ export default function AdminPage() {
 
       if (testimonialsRes && testimonialsRes.ok) {
         const testimonialsData = await testimonialsRes.json();
-        console.log("Testimonials data:", testimonialsData);
         setTestimonials(testimonialsData.data?.testimonials || []);
       } else {
         console.error("Testimonials API failed");
