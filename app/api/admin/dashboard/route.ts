@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database";
 import { z } from "zod";
-import { Prisma, ServiceStatus, Priority, ProjectStatus } from "@prisma/client";
+import { ServiceStatus, Priority, ProjectStatus } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 // Define enums for actions (not schema-related, so kept as is)
 enum GetAction {
@@ -28,30 +29,48 @@ const PaginationSchema = z.object({
   page: z
     .string()
     .transform((val) => parseInt(val, 10))
-    .refine((val) => !isNaN(val) && val >= 1, { message: "Page must be a positive integer" })
+    .refine((val) => !isNaN(val) && val >= 1, {
+      message: "Page must be a positive integer",
+    })
     .default("1"),
   limit: z
     .string()
     .transform((val) => parseInt(val, 10))
-    .refine((val) => !isNaN(val) && val >= 1 && val <= 100, { message: "Limit must be between 1 and 100" })
+    .refine((val) => !isNaN(val) && val >= 1 && val <= 100, {
+      message: "Limit must be between 1 and 100",
+    })
     .default("10"),
 });
 
 const MessagesQuerySchema = PaginationSchema.extend({
-  isRead: z.enum(["true", "false"]).optional().transform((val) => val === "true" ? true : val === "false" ? false : undefined),
+  isRead: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((val) =>
+      val === "true" ? true : val === "false" ? false : undefined
+    ),
 });
 
 const RequestsQuerySchema = PaginationSchema.extend({
-  status: z.enum(Object.values(ServiceStatus) as [string, ...string[]]).optional(),
+  status: z
+    .enum(Object.values(ServiceStatus) as [string, ...string[]])
+    .optional(),
   priority: z.enum(Object.values(Priority) as [string, ...string[]]).optional(),
 });
 
 const TestimonialsQuerySchema = PaginationSchema.extend({
-  approved: z.enum(["true", "false"]).optional().transform((val) => val === "true" ? true : val === "false" ? false : undefined),
+  approved: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((val) =>
+      val === "true" ? true : val === "false" ? false : undefined
+    ),
 });
 
 const ProjectsQuerySchema = PaginationSchema.extend({
-  status: z.enum(Object.values(ProjectStatus) as [string, ...string[]]).optional(),
+  status: z
+    .enum(Object.values(ProjectStatus) as [string, ...string[]])
+    .optional(),
 });
 
 // Zod schemas for POST request body
@@ -67,7 +86,7 @@ const PostBodySchema = z.object({
     PostAction.UPDATE_PROJECT_STATUS,
   ]),
   id: z.string().cuid(),
-  data: z.record(z.any()).optional(),
+  data: z.record(z.unknown()).optional(),
 });
 
 const MarkMessageRepliedSchema = z.object({
@@ -79,7 +98,10 @@ const UpdateRequestStatusSchema = z.object({
 });
 
 const UpdateRequestPrioritySchema = z.object({
-  priority: z.enum(Object.values(Priority) as [string, ...string[]]).nullable().optional(),
+  priority: z
+    .enum(Object.values(Priority) as [string, ...string[]])
+    .nullable()
+    .optional(),
 });
 
 const FeatureTestimonialSchema = z.object({
@@ -111,7 +133,9 @@ export async function GET(request: NextRequest) {
           prisma.contactMessage.count(),
           prisma.contactMessage.count({ where: { isRead: false } }),
           prisma.serviceRequest.count(),
-          prisma.serviceRequest.count({ where: { status: ServiceStatus.PENDING } }),
+          prisma.serviceRequest.count({
+            where: { status: ServiceStatus.PENDING },
+          }),
           prisma.testimonial.count(),
           prisma.testimonial.count({ where: { isApproved: false } }),
           prisma.project.count(),
@@ -170,7 +194,12 @@ export async function GET(request: NextRequest) {
         });
 
       case GetAction.REQUESTS:
-        const { page: requestsPage, limit: requestsLimit, status, priority } = RequestsQuerySchema.parse({
+        const {
+          page: requestsPage,
+          limit: requestsLimit,
+          status,
+          priority,
+        } = RequestsQuerySchema.parse({
           page: searchParams.get("page"),
           limit: searchParams.get("limit"),
           status: searchParams.get("status"),
@@ -216,7 +245,11 @@ export async function GET(request: NextRequest) {
         });
 
       case GetAction.TESTIMONIALS:
-        const { page: testimonialsPage, limit: testimonialsLimit, approved } = TestimonialsQuerySchema.parse({
+        const {
+          page: testimonialsPage,
+          limit: testimonialsLimit,
+          approved,
+        } = TestimonialsQuerySchema.parse({
           page: searchParams.get("page"),
           limit: searchParams.get("limit"),
           approved: searchParams.get("approved"),
@@ -261,7 +294,11 @@ export async function GET(request: NextRequest) {
         });
 
       case GetAction.PROJECTS:
-        const { page: projectsPage, limit: projectsLimit, status: projectStatus } = ProjectsQuerySchema.parse({
+        const {
+          page: projectsPage,
+          limit: projectsLimit,
+          status: projectStatus,
+        } = ProjectsQuerySchema.parse({
           page: searchParams.get("page"),
           limit: searchParams.get("limit"),
           status: searchParams.get("status"),
@@ -316,7 +353,11 @@ export async function GET(request: NextRequest) {
     console.error("Admin dashboard API error:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, message: "Invalid query parameters", errors: error.errors },
+        {
+          success: false,
+          message: "Invalid query parameters",
+          errors: error.errors,
+        },
         { status: 400 }
       );
     }
@@ -361,7 +402,11 @@ export async function POST(request: NextRequest) {
         const priorityData = UpdateRequestPrioritySchema.parse(data);
         await prisma.serviceRequest.update({
           where: { id },
-          data: { priority: priorityData.priority ? (priorityData.priority as Priority) : undefined },
+          data: {
+            priority: priorityData.priority
+              ? (priorityData.priority as Priority)
+              : undefined,
+          },
         });
         return NextResponse.json({ success: true });
 
@@ -404,7 +449,11 @@ export async function POST(request: NextRequest) {
     console.error("Admin dashboard POST error:", error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, message: "Invalid request body", errors: error.errors },
+        {
+          success: false,
+          message: "Invalid request body",
+          errors: error.errors,
+        },
         { status: 400 }
       );
     }
