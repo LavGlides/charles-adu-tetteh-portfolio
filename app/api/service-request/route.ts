@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { sendServiceRequestEmails } from "@/lib/email";
+import { ServiceRequestService, dbUtils } from "@/lib/db-services";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,15 +29,63 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate email format
+    if (!dbUtils.validateEmail(clientEmail)) {
+      return NextResponse.json(
+        { success: false, message: "Please provide a valid email address" },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize input data
+    const sanitizedData = {
+      clientName: dbUtils.sanitizeText(clientName),
+      clientEmail: clientEmail.toLowerCase().trim(),
+      projectType: dbUtils.sanitizeText(projectType),
+      budget: dbUtils.sanitizeText(budget),
+      timeline: dbUtils.sanitizeText(timeline),
+      projectDescription: dbUtils.sanitizeText(projectDescription),
+    };
+
+    // Get client information
+    const ipAddress = dbUtils.getClientIP(request);
+    const userAgent = dbUtils.getUserAgent(request);
+
+    // Save to database first
+    let savedRequest;
+    try {
+      savedRequest = await ServiceRequestService.create({
+        ...sanitizedData,
+        ipAddress,
+        userAgent,
+        emailSent: false, // Will update after email is sent
+      });
+    } catch (dbError) {
+      console.error("Database save failed:", dbError);
+      // Continue with email sending even if database fails
+    }
+
     // Send both notification and confirmation emails
-    const emailResult = await sendServiceRequestEmails({
-      clientName,
-      clientEmail,
-      projectType,
-      budget,
-      timeline,
-      projectDescription,
-    });
+    const emailResult = await sendServiceRequestEmails(sanitizedData);
+
+    // Update database with email status
+    if (savedRequest && emailResult.success) {
+      try {
+        await ServiceRequestService.updateEmailStatus(
+          savedRequest.id,
+          true,
+          emailResult.notification?.messageId
+        );
+        // Also update status to REVIEWING
+        await ServiceRequestService.updateStatus(
+          savedRequest.id,
+          "REVIEWING",
+          `Email sent successfully at ${new Date().toISOString()}`
+        );
+      } catch (updateError) {
+        console.error("Failed to update email status:", updateError);
+      }
+    }
 
     if (!emailResult.success) {
       console.error(
@@ -50,13 +99,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Log the successful submission
-    // Log the successful submission
     console.log("Service request processed:", {
-      clientName,
-      clientEmail,
-      projectType,
-      budget,
-      timeline,
+      id: savedRequest?.id,
+      clientName: sanitizedData.clientName,
+      clientEmail: sanitizedData.clientEmail,
+      projectType: sanitizedData.projectType,
+      budget: sanitizedData.budget,
+      timeline: sanitizedData.timeline,
+      ipAddress,
       notification: emailResult.notification?.messageId,
       confirmation: emailResult.confirmation?.messageId,
     });

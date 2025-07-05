@@ -577,6 +577,292 @@ Please do not reply to this email. For direct communication, contact me at aduch
   };
 };
 
+// Testimonial notification and confirmation emails
+export const sendTestimonialNotificationAndConfirmation = async (data: {
+  testimonial: {
+    name: string;
+    email: string;
+    role: string;
+    company: string;
+    projectType: string;
+    rating: number;
+    content: string;
+    consent: boolean;
+  };
+  testimonialId: string;
+}) => {
+  try {
+    // Admin notification email
+    const notificationTemplate = createTestimonialNotificationTemplate(data);
+    const notificationResult = await sendEmail({
+      to: process.env.EMAIL_USER!,
+      subject: notificationTemplate.subject,
+      html: notificationTemplate.html,
+      text: notificationTemplate.text,
+    });
+
+    // User confirmation email
+    const confirmationTemplate = createTestimonialConfirmationTemplate(data);
+    const confirmationResult = await sendEmail({
+      to: data.testimonial.email,
+      subject: confirmationTemplate.subject,
+      html: confirmationTemplate.html,
+      text: confirmationTemplate.text,
+    });
+
+    return {
+      success: notificationResult.success && confirmationResult.success,
+      notification: notificationResult,
+      confirmation: confirmationResult,
+    };
+  } catch (error) {
+    console.error("Testimonial emails sending failed:", error);
+    return { success: false, error };
+  }
+};
+
+// Testimonial notification email template (to admin)
+export const createTestimonialNotificationTemplate = (data: {
+  testimonial: {
+    name: string;
+    email: string;
+    role: string;
+    company: string;
+    projectType: string;
+    rating: number;
+    content: string;
+    consent: boolean;
+  };
+  testimonialId: string;
+}) => {
+  const stars = "⭐".repeat(data.testimonial.rating);
+
+  return {
+    subject: `New Testimonial: ${stars} from ${data.testimonial.name}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Testimonial Received</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center; }
+            .content { background: #f0f9ff; padding: 30px; border: 1px solid #e2e8f0; }
+            .section { margin-bottom: 25px; }
+            .label { font-weight: bold; color: #059669; margin-bottom: 5px; display: block; }
+            .value { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+            .testimonial-box { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981; }
+            .rating { font-size: 24px; margin: 10px 0; }
+            .footer { background: #1e293b; color: white; padding: 20px; border-radius: 0 0 10px 10px; text-align: center; font-size: 14px; }
+            .action-btn { background: #059669; color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>⭐ New Testimonial Received!</h1>
+              <p>A client has shared their experience working with you!</p>
+            </div>
+            
+            <div class="content">
+              <div class="section">
+                <span class="label">Client Name:</span>
+                <div class="value">${data.testimonial.name}</div>
+              </div>
+              
+              <div class="section">
+                <span class="label">Email:</span>
+                <div class="value">${data.testimonial.email}</div>
+              </div>
+              
+              <div class="section">
+                <span class="label">Role & Company:</span>
+                <div class="value">${data.testimonial.role} at ${
+      data.testimonial.company
+    }</div>
+              </div>
+              
+              <div class="section">
+                <span class="label">Project Type:</span>
+                <div class="value">${data.testimonial.projectType}</div>
+              </div>
+              
+              <div class="section">
+                <span class="label">Rating:</span>
+                <div class="value">
+                  <div class="rating">${stars}</div>
+                  ${data.testimonial.rating}/5 Stars
+                </div>
+              </div>
+              
+              <div class="section">
+                <span class="label">Testimonial:</span>
+                <div class="testimonial-box">
+                  "${data.testimonial.content}"
+                </div>
+              </div>
+              
+              <div class="section">
+                <span class="label">Marketing Consent:</span>
+                <div class="value">${
+                  data.testimonial.consent ? "✅ Yes" : "❌ No"
+                }</div>
+              </div>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="http://localhost:5555" class="action-btn">Review in Database</a>
+                <a href="http://localhost:3001/admin" class="action-btn">Admin Dashboard</a>
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p><strong>Action Required:</strong> Review and approve this testimonial to display it on your portfolio.</p>
+              <p>Testimonial ID: ${data.testimonialId}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+    text: `
+      New Testimonial Received!
+      
+      From: ${data.testimonial.name} (${data.testimonial.email})
+      Role: ${data.testimonial.role} at ${data.testimonial.company}
+      Project: ${data.testimonial.projectType}
+      Rating: ${data.testimonial.rating}/5 stars
+      
+      Testimonial:
+      "${data.testimonial.content}"
+      
+      Marketing Consent: ${data.testimonial.consent ? "Yes" : "No"}
+      Testimonial ID: ${data.testimonialId}
+      
+      Please review and approve this testimonial in your admin dashboard.
+    `,
+  };
+};
+
+// Testimonial confirmation email template (to client)
+export const createTestimonialConfirmationTemplate = (data: {
+  testimonial: {
+    name: string;
+    email: string;
+    role: string;
+    company: string;
+    projectType: string;
+    rating: number;
+    content: string;
+    consent: boolean;
+  };
+  testimonialId: string;
+}) => {
+  const stars = "⭐".repeat(data.testimonial.rating);
+
+  return {
+    subject: "Thank you for your testimonial! ⭐",
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Testimonial Confirmation</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center; }
+            .content { background: #f0f9ff; padding: 30px; border: 1px solid #e2e8f0; }
+            .section { margin-bottom: 25px; }
+            .testimonial-box { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981; margin: 20px 0; }
+            .rating { font-size: 20px; margin: 10px 0; }
+            .footer { background: #1e293b; color: white; padding: 20px; border-radius: 0 0 10px 10px; text-align: center; font-size: 14px; }
+            .portfolio-link { color: #10b981; text-decoration: none; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Thank You, ${data.testimonial.name}! 🙏</h1>
+              <p>Your testimonial has been received and will be reviewed shortly.</p>
+            </div>
+            
+            <div class="content">
+              <p>Hi ${data.testimonial.name},</p>
+              
+              <p>Thank you so much for taking the time to share your experience! Your ${
+                data.testimonial.rating
+              }-star testimonial means a lot and helps others understand the value of working together.</p>
+              
+              <div class="testimonial-box">
+                <div class="rating">${stars}</div>
+                <p><strong>Your testimonial:</strong></p>
+                <p>"${data.testimonial.content}"</p>
+                <p><em>- ${data.testimonial.name}, ${
+      data.testimonial.role
+    } at ${data.testimonial.company}</em></p>
+              </div>
+              
+              <p><strong>What happens next?</strong></p>
+              <ul>
+                <li>Your testimonial will be reviewed for approval</li>
+                <li>Once approved, it may be featured on the portfolio website</li>
+                <li>You'll be notified if your testimonial is published</li>
+              </ul>
+              
+              <p>If you have any questions or would like to work together again, don't hesitate to reach out!</p>
+              
+              <p>Best regards,<br>
+              <strong>Charles Adu Tetteh</strong><br>
+              Full Stack Developer</p>
+            </div>
+            
+            <div class="footer">
+              <p>Visit the portfolio: <a href="${
+                process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+                "https://charles-adu-tetteh.vercel.app"
+              }" class="portfolio-link">charles-adu-tetteh.vercel.app</a></p>
+              <p>Reference ID: ${data.testimonialId}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+    text: `
+      Thank You, ${data.testimonial.name}!
+      
+      Your ${
+        data.testimonial.rating
+      }-star testimonial has been received and will be reviewed shortly.
+      
+      Your testimonial:
+      "${data.testimonial.content}"
+      - ${data.testimonial.name}, ${data.testimonial.role} at ${
+      data.testimonial.company
+    }
+      
+      What happens next:
+      - Your testimonial will be reviewed for approval
+      - Once approved, it may be featured on the portfolio website
+      - You'll be notified if your testimonial is published
+      
+      Thank you for your trust and feedback!
+      
+      Best regards,
+      Charles Adu Tetteh
+      Full Stack Developer
+      
+      Portfolio: ${
+        process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
+        "https://charles-adu-tetteh.vercel.app"
+      }
+      Reference ID: ${data.testimonialId}
+    `,
+  };
+};
+
 // Send email function
 export const sendEmail = async (options: {
   to: string;

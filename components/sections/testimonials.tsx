@@ -32,7 +32,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { testimonials } from "@/data/testimonials";
+import { validateImageFile, getUserAvatar } from "@/lib/image-utils";
+import { Testimonial } from "@/types/database";
 
 export function Testimonials() {
   const ref = useRef(null);
@@ -40,10 +41,38 @@ export function Testimonials() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/testimonials?approved=true");
+        const data = await response.json();
+
+        if (data.success) {
+          setTestimonials(data.data);
+        } else {
+          setError(data.message);
+        }
+      } catch (err) {
+        setError("Failed to fetch testimonials");
+        console.error("Error fetching testimonials:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
   // Get all approved testimonials
-  const approvedTestimonials = testimonials.filter((t) => t.approved);
+  const approvedTestimonials = testimonials.filter((t) => t.isApproved);
   const totalSlides = Math.ceil(approvedTestimonials.length / 3);
 
   // Auto-play functionality
@@ -75,23 +104,117 @@ export function Testimonials() {
     setIsAutoPlay(!isAutoPlay);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate the file
+      const validation = validateImageFile(file);
+      if (!validation.valid) {
+        toast({
+          title: "Invalid Image",
+          description: validation.error,
+          variant: "destructive",
+        });
+        e.target.value = ""; // Clear the input
+        setImagePreview(null);
+        return;
+      }
+
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
+  const clearImagePreview = () => {
+    setImagePreview(null);
+    // Clear the file input
+    const fileInput = document.getElementById(
+      "testimonial-image"
+    ) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
+  };
+
   const handleTestimonialSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const formData = new FormData(e.currentTarget);
+      const imageFile = formData.get("image") as File;
 
-    toast({
-      title: "Testimonial Submitted!",
-      description:
-        "Thank you for your testimonial. It will be reviewed and published soon.",
-      className: "bg-green-600 text-white border-green-700",
-    });
+      // Validate image if uploaded
+      if (imageFile && imageFile.size > 0) {
+        const validation = validateImageFile(imageFile);
+        if (!validation.valid) {
+          throw new Error(validation.error);
+        }
+      }
 
-    setIsSubmitting(false);
-    e.currentTarget.reset();
+      // Validate required fields (FormData will be validated on server)
+      const requiredFields = [
+        "name",
+        "email",
+        "role",
+        "company",
+        "projectType",
+        "rating",
+        "content",
+      ];
+      for (const field of requiredFields) {
+        if (!formData.get(field)) {
+          throw new Error(`Please fill in the ${field} field`);
+        }
+      }
+
+      // Send FormData to handle image uploads
+      const response = await fetch("/api/testimonial", {
+        method: "POST",
+        body: formData, // Send FormData directly
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Reset form first, before showing toast
+        const form = e.currentTarget;
+        if (form) {
+          form.reset();
+        }
+
+        // Clear image preview
+        setImagePreview(null);
+
+        // Close dialog
+        setIsDialogOpen(false);
+
+        // Show success toast
+        toast({
+          title: "Testimonial Submitted! ✅",
+          description: result.message,
+          className: "bg-green-600 text-white border-green-700",
+        });
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      toast({
+        title: "Error ❌",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to submit testimonial. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Animation variants for stagger effect
@@ -118,7 +241,7 @@ export function Testimonials() {
       scale: 1,
       transition: {
         duration: 1,
-        ease: [0.4, 0.0, 0.2, 1] as const, 
+        ease: [0.4, 0.0, 0.2, 1] as const,
       },
     },
   };
@@ -328,7 +451,7 @@ export function Testimonials() {
                             delay: index * 0.1 + 0.6,
                           }}
                         >
-                          "{testimonial.content}"
+                          "{testimonial.testimonial}"
                         </motion.p>
 
                         {/* Author info */}
@@ -347,11 +470,14 @@ export function Testimonials() {
                           >
                             <Avatar className="mr-4 w-12 h-12 sm:w-14 sm:h-14 ring-2 ring-purple-400/30 group-hover:ring-purple-400/60 transition-all duration-300">
                               <AvatarImage
-                                src={testimonial.image || "/placeholder.svg"}
-                                alt={testimonial.name}
+                                src={getUserAvatar(
+                                  testimonial.clientEmail || "",
+                                  testimonial.clientImage
+                                )}
+                                alt={testimonial.clientName}
                               />
                               <AvatarFallback className="bg-gradient-to-br from-purple-600 to-purple-700 text-white font-inter font-semibold text-lg">
-                                {testimonial.name
+                                {testimonial.clientName
                                   .split(" ")
                                   .map((n) => n[0])
                                   .join("")}
@@ -360,13 +486,13 @@ export function Testimonials() {
                           </motion.div>
                           <div>
                             <h4 className="text-white font-semibold font-playfair text-base sm:text-lg mb-1">
-                              {testimonial.name}
+                              {testimonial.clientName}
                             </h4>
                             <p className="text-purple-200 font-inter font-light text-sm leading-tight">
-                              {testimonial.role}
+                              {testimonial.clientTitle}
                             </p>
                             <p className="text-gray-400 font-inter font-light text-xs">
-                              {testimonial.company}
+                              {testimonial.clientCompany}
                             </p>
                           </div>
                         </motion.div>
@@ -415,7 +541,7 @@ export function Testimonials() {
               I'd love to hear about your experience working together!
             </p>
 
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
@@ -430,7 +556,7 @@ export function Testimonials() {
                   </Button>
                 </motion.div>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-slate-900/95 border-slate-700/50 backdrop-blur-md rounded-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900/95 border-slate-700/50 backdrop-blur-md rounded-2xl">
                 <DialogHeader>
                   <DialogTitle className="text-xl sm:text-2xl text-white font-playfair">
                     Share Your Testimonial
@@ -519,6 +645,54 @@ export function Testimonials() {
                       />
                     </motion.div>
                   </div>
+
+                  {/* Optional Image Upload with Preview */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.55 }}
+                  >
+                    <Label
+                      htmlFor="testimonial-image"
+                      className="text-white font-inter font-medium text-sm sm:text-base"
+                    >
+                      Your Photo (Optional)
+                    </Label>
+                    <div className="space-y-3">
+                      <Input
+                        id="testimonial-image"
+                        name="image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="bg-slate-900/50 border-slate-700/50 text-white focus:ring-purple-400 focus:border-purple-400 font-inter font-light text-sm sm:text-base rounded-lg file:bg-purple-600 file:text-white file:border-0 file:rounded-md file:px-3 file:py-1"
+                      />
+
+                      {/* Image Preview */}
+                      {imagePreview && (
+                        <div className="relative inline-block">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-20 h-20 object-cover rounded-lg border-2 border-purple-400/30"
+                          />
+                          <button
+                            type="button"
+                            onClick={clearImagePreview}
+                            className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm transition-colors"
+                            aria-label="Remove image"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )}
+
+                      <p className="text-gray-400 text-xs">
+                        Upload a photo or we'll use your Gravatar. Max 5MB,
+                        JPEG/PNG/WebP only.
+                      </p>
+                    </div>
+                  </motion.div>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}

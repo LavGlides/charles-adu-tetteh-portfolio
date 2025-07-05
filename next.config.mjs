@@ -9,6 +9,21 @@ const nextConfig = {
   images: {
     unoptimized: true,
     formats: ["image/webp", "image/avif"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.gravatar.com",
+        port: "",
+        pathname: "/avatar/**",
+      },
+      {
+        protocol: "https",
+        hostname:
+          "charles-adu-tetteh-portfolio-images.s3.us-east-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
   // Enable compression
   compress: true,

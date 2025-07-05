@@ -1,0 +1,323 @@
+// Charles Adu Tetteh Portfolio Database Schema
+// Comprehensive schema for portfolio, contact, projects, testimonials, blogs, and more
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Contact Messages from the contact form
+model ContactMessage {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  subject     String
+  message     String   @db.Text
+  emailSent   Boolean  @default(false)
+  emailId     String?  // Store email message ID for tracking
+  isRead      Boolean  @default(false)
+  isReplied   Boolean  @default(false)
+  replyNotes  String?  @db.Text
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contact_messages")
+}
+
+// Service Requests from the service request form
+model ServiceRequest {
+  id                  String            @id @default(cuid())
+  clientName          String
+  clientEmail         String
+  projectType         String
+  budget              String
+  timeline            String
+  projectDescription  String            @db.Text
+  status              ServiceStatus     @default(PENDING)
+  priority            Priority          @default(MEDIUM)
+  emailSent           Boolean           @default(false)
+  emailId             String?
+  isRead              Boolean           @default(false)
+  estimatedCost       Float?
+  proposalSent        Boolean           @default(false)
+  proposalSentAt      DateTime?
+  contractSigned      Boolean           @default(false)
+  contractSignedAt    DateTime?
+  projectStartDate    DateTime?
+  projectEndDate      DateTime?
+  notes               String?           @db.Text
+  ipAddress           String?
+  userAgent           String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  // Relations
+  project             Project?          @relation(fields: [projectId], references: [id])
+  projectId           String?
+  
+  @@map("service_requests")
+}
+
+// Projects portfolio
+model Project {
+  id              String           @id @default(cuid())
+  title           String
+  description     String           @db.Text
+  shortDescription String?
+  technologies    String[]         // Array of technologies used
+  category        ProjectCategory
+  status          ProjectStatus    @default(DEVELOPMENT)
+  featured        Boolean          @default(false)
+  githubUrl       String?
+  liveUrl         String?
+  demoUrl         String?
+  imageUrl        String?
+  images          String[]         // Array of image URLs
+  startDate       DateTime?
+  endDate         DateTime?
+  clientName      String?
+  clientCompany   String?
+  budget          Float?
+  duration        String?          // e.g., "3 months"
+  challenges      String?          @db.Text
+  solutions       String?          @db.Text
+  results         String?          @db.Text
+  views           Int              @default(0)
+  likes           Int              @default(0)
+  isPublic        Boolean          @default(true)
+  seoTitle        String?
+  seoDescription  String?
+  slug            String           @unique
+  tags            String[]         // For better categorization
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  serviceRequests ServiceRequest[]
+  testimonials    Testimonial[]
+  blogPosts       BlogPost[]       @relation("ProjectBlogPosts")
+  
+  @@map("projects")
+}
+
+// Client testimonials
+model Testimonial {
+  id              String           @id @default(cuid())
+  clientName      String
+  clientTitle     String           // Role/Position (required)
+  clientCompany   String           // Company/Organization (required)
+  clientEmail     String           // Email for Gravatar and contact
+  clientImage     String?          // Gravatar URL or uploaded image URL
+  testimonial     String           @db.Text // The actual testimonial content
+  rating          Int              @default(5) // 1-5 stars rating
+  serviceType     String           // Type of work/project (required)
+  
+  // Admin management fields
+  featured        Boolean          @default(false)
+  isApproved      Boolean          @default(false) // Requires manual approval
+  isPublic        Boolean          @default(true)
+  
+  // Form tracking fields (consistent with other forms)
+  emailSent       Boolean          @default(false)
+  emailId         String?          // Store email message ID for tracking
+  consent         Boolean          @default(false) // User consent for data usage
+  ipAddress       String?
+  userAgent       String?
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  project         Project?         @relation(fields: [projectId], references: [id])
+  projectId       String?
+  
+  @@map("testimonials")
+}
+
+// Blog posts for content marketing
+model BlogPost {
+  id              String           @id @default(cuid())
+  title           String
+  slug            String           @unique
+  excerpt         String?
+  content         String           @db.Text
+  publishedAt     DateTime?
+  status          BlogStatus       @default(DRAFT)
+  featured        Boolean          @default(false)
+  author          String           @default("Charles Adu Tetteh")
+  authorImage     String?
+  featuredImage   String?
+  images          String[]
+  categories      String[]
+  tags            String[]
+  readTime        Int?             // in minutes
+  views           Int              @default(0)
+  likes           Int              @default(0)
+  shares          Int              @default(0)
+  seoTitle        String?
+  seoDescription  String?
+  seoKeywords     String[]
+  isPublic        Boolean          @default(true)
+  allowComments   Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  relatedProjects Project[]        @relation("ProjectBlogPosts")
+  comments        BlogComment[]
+  
+  @@map("blog_posts")
+}
+
+// Blog comments
+model BlogComment {
+  id          String       @id @default(cuid())
+  name        String
+  email       String
+  website     String?
+  comment     String       @db.Text
+  isApproved  Boolean      @default(false)
+  parentId    String?      // For nested comments
+  parent      BlogComment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     BlogComment[] @relation("CommentReplies")
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  blogPost    BlogPost     @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  blogPostId  String
+  
+  @@map("blog_comments")
+}
+
+// Newsletter subscribers
+model Subscriber {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  name            String?
+  isActive        Boolean          @default(true)
+  source          String?          // e.g., "blog", "contact_form", "footer"
+  interests       String[]         // e.g., ["web_development", "aws", "mobile"]
+  unsubscribeToken String?         @unique
+  confirmedAt     DateTime?
+  unsubscribedAt  DateTime?
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("subscribers")
+}
+
+// Skills and technologies
+model Skill {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  category    SkillCategory
+  proficiency Int          @default(1) // 1-5 scale
+  yearsOfExp  Float?
+  description String?
+  icon        String?
+  isActive    Boolean      @default(true)
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  @@map("skills")
+}
+
+// Analytics and tracking
+model PageView {
+  id        String   @id @default(cuid())
+  page      String
+  referrer  String?
+  userAgent String?
+  ipAddress String?
+  country   String?
+  city      String?
+  device    String?
+  browser   String?
+  os        String?
+  createdAt DateTime @default(now())
+  
+  @@map("page_views")
+}
+
+// Site configuration
+model SiteConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  isPublic    Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  
+  @@map("site_config")
+}
+
+// Enums
+enum ServiceStatus {
+  PENDING
+  REVIEWING
+  PROPOSAL_SENT
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  ON_HOLD
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProjectCategory {
+  WEB_DEVELOPMENT
+  MOBILE_DEVELOPMENT
+  CLOUD_SOLUTIONS
+  API_DEVELOPMENT
+  ECOMMERCE
+  PORTFOLIO
+  BLOG
+  SAAS
+  OTHER
+}
+
+enum ProjectStatus {
+  PLANNING
+  DEVELOPMENT
+  TESTING
+  DEPLOYED
+  MAINTENANCE
+  COMPLETED
+  CANCELLED
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+enum SkillCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  CLOUD
+  DEVOPS
+  MOBILE
+  TOOLS
+  SOFT_SKILLS
+}

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { sendContactEmails } from "@/lib/email";
+import { ContactMessageService, dbUtils } from "@/lib/db-services";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,13 +15,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate email format
+    if (!dbUtils.validateEmail(email)) {
+      return NextResponse.json(
+        { success: false, message: "Please provide a valid email address" },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize input data
+    const sanitizedData = {
+      name: dbUtils.sanitizeText(name),
+      email: email.toLowerCase().trim(),
+      subject: dbUtils.sanitizeText(subject),
+      message: dbUtils.sanitizeText(message),
+    };
+
+    // Get client information
+    const ipAddress = dbUtils.getClientIP(request);
+    const userAgent = dbUtils.getUserAgent(request);
+
+    // Save to database first
+    let savedMessage;
+    try {
+      savedMessage = await ContactMessageService.create({
+        ...sanitizedData,
+        ipAddress,
+        userAgent,
+        emailSent: false, // Will update after email is sent
+      });
+    } catch (dbError) {
+      console.error("Database save failed:", dbError);
+      // Continue with email sending even if database fails
+    }
+
     // Send both notification and confirmation emails
-    const emailResult = await sendContactEmails({
-      name,
-      email,
-      subject,
-      message,
-    });
+    const emailResult = await sendContactEmails(sanitizedData);
+
+    // Update database with email status
+    if (savedMessage && emailResult.success) {
+      try {
+        await ContactMessageService.updateEmailStatus(
+          savedMessage.id,
+          true,
+          emailResult.notification?.messageId
+        );
+      } catch (updateError) {
+        console.error("Failed to update email status:", updateError);
+      }
+    }
 
     if (!emailResult.success) {
       console.error("Failed to send emails:", emailResult.error);
@@ -32,9 +75,11 @@ export async function POST(request: NextRequest) {
 
     // Log the successful submission
     console.log("Contact form submission processed:", {
-      name,
-      email,
-      subject,
+      id: savedMessage?.id,
+      name: sanitizedData.name,
+      email: sanitizedData.email,
+      subject: sanitizedData.subject,
+      ipAddress,
       notification: emailResult.notification?.messageId,
       confirmation: emailResult.confirmation?.messageId,
     });
