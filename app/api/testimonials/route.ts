@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database";
+import { withRateLimit, publicApiLimiter } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const approved = searchParams.get("approved");
-    const featured = searchParams.get("featured");
-    const limit = searchParams.get("limit");
+  return withRateLimit(request, publicApiLimiter, async () => {
+    try {
+      const { searchParams } = new URL(request.url);
+      const approved = searchParams.get("approved");
+      const featured = searchParams.get("featured");
+      const limit = searchParams.get("limit");
 
-    const whereClause: any = {};
+      const whereClause: any = {};
 
     if (approved !== null) {
       whereClause.isApproved = approved === "true";
@@ -57,4 +59,5 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+  });
 }

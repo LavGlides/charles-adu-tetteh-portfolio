@@ -111,7 +111,22 @@ export function Projects() {
       );
     }
 
-    return filtered;
+    // Sort projects: Live projects with liveUrl first, then by featured, then by creation date
+    return filtered.sort((a, b) => {
+      // First priority: Live projects with liveUrl
+      const aIsLiveWithUrl = a.status === "DEPLOYED" && a.liveUrl;
+      const bIsLiveWithUrl = b.status === "DEPLOYED" && b.liveUrl;
+      
+      if (aIsLiveWithUrl && !bIsLiveWithUrl) return -1;
+      if (!aIsLiveWithUrl && bIsLiveWithUrl) return 1;
+      
+      // Second priority: Featured projects
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      
+      // Third priority: Most recent projects
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
   }, [activeFilter, searchQuery, projects]);
 
   const getStatusColor = (status: string) => {
@@ -262,7 +277,11 @@ export function Projects() {
                   whileHover={{ y: -10, transition: { duration: 0.3 } }}
                   className="relative group"
                 >
-                  <Card className="bg-slate-900/30 border border-slate-700/50 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden rounded-xl">
+                  <Card className={`${
+                    project.status === "DEPLOYED" && project.liveUrl
+                      ? "bg-slate-900/30 border border-green-500/30 shadow-green-500/10 shadow-2xl"
+                      : "bg-slate-900/30 border border-slate-700/50"
+                  } backdrop-blur-md hover:shadow-2xl transition-all duration-500 overflow-hidden rounded-xl`}>
                     {/* Image with Parallax Effect */}
                     <div className="relative overflow-hidden h-48">
                       <motion.div
@@ -289,13 +308,33 @@ export function Projects() {
                           delay: index * 0.15 + 0.2,
                         }}
                       >
-                        <Badge
-                          className={`${getStatusColor(
-                            project.status
-                          )} text-white backdrop-blur-sm font-inter font-medium text-xs`}
-                        >
-                          {getStatusText(project.status)}
-                        </Badge>
+                        {project.status === "DEPLOYED" && project.liveUrl ? (
+                          <a
+                            href={project.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block hover:scale-110 transition-transform duration-200"
+                            onClick={() =>
+                              analytics.trackButtonClick(
+                                "Live Badge",
+                                `Project: ${project.title}`
+                              )
+                            }
+                          >
+                            <Badge className="bg-green-500/90 hover:bg-green-400/90 text-white backdrop-blur-sm font-inter font-medium text-xs cursor-pointer flex items-center gap-1">
+                              <ExternalLink size={10} />
+                              Live
+                            </Badge>
+                          </a>
+                        ) : (
+                          <Badge
+                            className={`${getStatusColor(
+                              project.status
+                            )} text-white backdrop-blur-sm font-inter font-medium text-xs`}
+                          >
+                            {getStatusText(project.status)}
+                          </Badge>
+                        )}
                       </motion.div>
                       <motion.div
                         className="absolute top-4 right-4"
@@ -494,7 +533,7 @@ export function Projects() {
                                       View Code
                                     </a>
                                   </Button>
-                                  {project.status === "live" && (
+                                  {project.status === "DEPLOYED" && project.liveUrl && (
                                     <Button
                                       variant="outline"
                                       asChild
@@ -539,7 +578,7 @@ export function Projects() {
                               <Github size={16} />
                             </a>
                           </Button>
-                          {project.status === "live" && (
+                          {project.status === "DEPLOYED" && project.liveUrl && (
                             <Button
                               variant="ghost"
                               size="sm"
