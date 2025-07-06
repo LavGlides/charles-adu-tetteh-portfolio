@@ -3,15 +3,16 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Script from "next/script";
 
+// Define metadataBase for absolute URLs
+const metadataBase = new URL(
+  process.env.NEXT_PUBLIC_PORTFOLIO_URL || "https://charles-adu-tetteh.vercel.app" 
+);
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_PORTFOLIO_URL?.startsWith("http")
-      ? process.env.NEXT_PUBLIC_PORTFOLIO_URL
-      : "http://localhost:3000"
-  ),
+  metadataBase,
   title: "Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert",
   description:
-    "Skilled full-stack developer and AWS Cloud specialist with a background in Computer Science, delivering scalable web and mobile solutions. Available for hire in Ghana and globally.",
+    "Dynamic full-stack developer and AWS Cloud expert, ready to transform your ideas into powerful software or launch your website online. With a Computer Science background and expertise in scalable web and mobile solutions, I am here to bring your vision to life. Available for hire in Ghana and globally..",
   keywords: [
     "Charles Adu Tetteh",
     "Full-Stack Developer",
@@ -60,18 +61,11 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/charles_big.jpg",
+        url: new URL("/charles_big.png", metadataBase).toString(),
         width: 1200,
         height: 630,
         alt: "Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert",
         type: "image/jpeg",
-      },
-      {
-        url: "/charles_passport_size.png",
-        width: 800,
-        height: 600,
-        alt: "Charles Adu Tetteh Profile Picture",
-        type: "image/png",
       },
     ],
   },
@@ -84,7 +78,7 @@ export const metadata: Metadata = {
       "Experienced full-stack developer with expertise in web development, AWS, and mobile-first development, based in Ghana. Available for hire globally.",
     images: [
       {
-        url: "/charles_big.jpg",
+        url: new URL("/charles_big.png", metadataBase).toString(),
         alt: "Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert",
       },
     ],
@@ -129,6 +123,40 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#1e293b" />
 
+        {/* Open Graph meta tags */}
+        <meta
+          property="og:image"
+          content={new URL("/charles_big.png", metadataBase).toString()}
+        />
+        <meta
+          property="og:image:secure_url"
+          content={new URL("/charles_big.png", metadataBase).toString()}
+        />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta
+          property="og:image:alt"
+          content="Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert"
+        />
+
+        {/* WhatsApp and LinkedIn specific meta tags */}
+        <meta
+          property="og:title"
+          content="Charles Adu Tetteh - Full-Stack Developer & AWS Cloud Expert"
+        />
+        <meta
+          property="og:description"
+          content="React & Next.js specialist building high-performance apps with AWS cloud integration. Hire Charles Adu Tetteh for modern software development needs. Available for hire globally."
+        />
+
+        {/* LinkedIn specific meta tags */}
+        <meta property="article:author" content="Charles Adu Tetteh" />
+        <meta
+          property="article:published_time"
+          content="2024-01-01T00:00:00Z"
+        />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -139,12 +167,10 @@ export default function RootLayout({
               jobTitle: "Full-Stack Developer & AWS Cloud Expert",
               description:
                 "Dynamic Computer Science graduate with expertise in full-stack web and mobile app development, AWS cloud solutions, and technical training.",
-              url:
-                process.env.NEXT_PUBLIC_PORTFOLIO_URL ||
-                "http://localhost:3000",
+              url: metadataBase.toString(),
               image: {
                 "@type": "ImageObject",
-                url: "/charles_big.jpg",
+                url: new URL("/charles_big.png", metadataBase).toString(),
                 width: "1200",
                 height: "630",
               },
@@ -217,7 +243,11 @@ export default function RootLayout({
 
         {/* Microsoft Clarity */}
         {process.env.NEXT_PUBLIC_CLARITY_ID && (
-          <Script id="microsoft-clarity" strategy="afterInteractive" type="text/javascript">
+          <Script
+            id="microsoft-clarity"
+            strategy="afterInteractive"
+            type="text/javascript"
+          >
             {`
               (function(c,l,a,r,i,t,y){
                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
