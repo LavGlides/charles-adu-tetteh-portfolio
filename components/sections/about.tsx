@@ -52,7 +52,7 @@ export function About() {
                 <p className="text-gray-200 mb-6 leading-relaxed font-inter font-light text-sm sm:text-base">
                   As a Computer Science graduate from Garden City University College, I've built my career around
                   creating impactful solutions and sharing knowledge. Currently serving as IT Officer & Software Development
-                  Lead at Ghana Broadcasting Corporation, I've developed enterprise systems that serve thousands of
+                  Lead, I have developed enterprise systems that serve thousands of
                   users.
                 </p>
                 <p className="text-gray-200 leading-relaxed font-inter font-light text-sm sm:text-base">
