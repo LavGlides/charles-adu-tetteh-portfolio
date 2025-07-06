@@ -1,21 +1,21 @@
+// lib/prisma.ts
 import { PrismaClient } from "@prisma/client";
 
-// Prevent multiple instances of Prisma Client in development
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
 export const prisma =
-  globalForPrisma.prisma ??
+  global.prisma ??
   new PrismaClient({
-    log: ["error"],
+    log: ["error"], // or include "query" in dev
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
 export default prisma;
 
-// Database connection health check
+// Health check
 export async function checkDatabaseConnection() {
   try {
     await prisma.$connect();
