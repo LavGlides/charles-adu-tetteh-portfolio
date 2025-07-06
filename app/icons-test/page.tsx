@@ -1,9 +1,4 @@
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Icons & Meta Tags Test - Charles Adu Tetteh Portfolio",
-  description: "Test page to verify all icons and meta tags are working correctly",
-};
+"use client";
 
 export default function IconsTestPage() {
   const baseUrl = process.env.NEXT_PUBLIC_PORTFOLIO_URL?.startsWith("http")
