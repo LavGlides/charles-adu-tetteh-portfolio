@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database";
 import { z } from "zod";
-import { ServiceStatus, Priority, ProjectStatus } from "@prisma/client";
-import type { Prisma } from "@prisma/client";
+import { Prisma, ServiceStatus, Priority, ProjectStatus } from "@prisma/client";
 
 // Define enums for actions (not schema-related, so kept as is)
 enum GetAction {
@@ -52,10 +51,8 @@ const MessagesQuerySchema = PaginationSchema.extend({
 });
 
 const RequestsQuerySchema = PaginationSchema.extend({
-  status: z
-    .enum(Object.values(ServiceStatus) as [string, ...string[]])
-    .optional(),
-  priority: z.enum(Object.values(Priority) as [string, ...string[]]).optional(),
+  status: z.string().optional(),
+  priority: z.string().optional(),
 });
 
 const TestimonialsQuerySchema = PaginationSchema.extend({
@@ -68,9 +65,7 @@ const TestimonialsQuerySchema = PaginationSchema.extend({
 });
 
 const ProjectsQuerySchema = PaginationSchema.extend({
-  status: z
-    .enum(Object.values(ProjectStatus) as [string, ...string[]])
-    .optional(),
+  status: z.string().optional(),
 });
 
 // Zod schemas for POST request body
@@ -94,14 +89,11 @@ const MarkMessageRepliedSchema = z.object({
 });
 
 const UpdateRequestStatusSchema = z.object({
-  status: z.enum(Object.values(ServiceStatus) as [string, ...string[]]),
+  status: z.string(),
 });
 
 const UpdateRequestPrioritySchema = z.object({
-  priority: z
-    .enum(Object.values(Priority) as [string, ...string[]])
-    .nullable()
-    .optional(),
+  priority: z.string().nullable().optional(),
 });
 
 const FeatureTestimonialSchema = z.object({
@@ -109,7 +101,15 @@ const FeatureTestimonialSchema = z.object({
 });
 
 const UpdateProjectStatusSchema = z.object({
-  status: z.enum(Object.values(ProjectStatus) as [string, ...string[]]),
+  status: z.enum([
+    "PLANNING",
+    "DEVELOPMENT",
+    "TESTING",
+    "DEPLOYED",
+    "MAINTENANCE",
+    "COMPLETED",
+    "CANCELLED",
+  ]),
 });
 
 // GET Handler
@@ -134,12 +134,12 @@ export async function GET(request: NextRequest) {
           prisma.contactMessage.count({ where: { isRead: false } }),
           prisma.serviceRequest.count(),
           prisma.serviceRequest.count({
-            where: { status: ServiceStatus.PENDING },
+            where: { status: "PENDING" },
           }),
           prisma.testimonial.count(),
           prisma.testimonial.count({ where: { isApproved: false } }),
           prisma.project.count(),
-          prisma.project.count({ where: { status: ProjectStatus.DEPLOYED } }),
+          prisma.project.count({ where: { status: "DEPLOYED" } }),
         ]);
 
         return NextResponse.json({
