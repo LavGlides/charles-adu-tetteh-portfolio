@@ -135,8 +135,7 @@ export function Footer() {
             className="border-t border-slate-800/50 mt-8 pt-8 text-center"
           >
             <p className="text-gray-300 font-inter font-light text-sm sm:text-base">
-              © {currentYear} Charles Adu Tetteh. All rights reserved. Built
-              with Next.js and Framer Motion.
+              © {currentYear} Charles Adu Tetteh. All rights reserved. 
             </p>
           </motion.div>
         </div>
