@@ -5,7 +5,7 @@ import Script from "next/script";
 
 // Define metadataBase for absolute URLs
 const metadataBase = new URL(
-  process.env.NEXT_PUBLIC_PORTFOLIO_URL || "https://charles-adu-tetteh.vercel.app" 
+  process.env.NEXT_PUBLIC_PORTFOLIO_URL || "https://aducharlest.com" 
 );
 
 export const metadata: Metadata = {
@@ -123,6 +123,10 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#1e293b" />
 
+        {/* Google site verification */}
+        <meta name="google-site-verification" content="Hlpr50bXxGtsvmmASlU91SgFBWY89yq9udEIpLM3lhk" />
+
+  
         {/* Open Graph meta tags */}
         <meta
           property="og:image"
