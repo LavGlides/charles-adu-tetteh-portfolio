@@ -264,14 +264,14 @@ export function Contact() {
                       className="data-[state=active]:bg-purple-600"
                     >
                       <Mail className="mr-2" size={16} />
-                      Contact Me
+                      Send a Message
                     </TabsTrigger>
                     <TabsTrigger
                       value="service"
                       className="data-[state=active]:bg-purple-600"
                     >
                       <Briefcase className="mr-2" size={16} />
-                      Book Service
+                      Start Your Project
                     </TabsTrigger>
                   </TabsList>
 
