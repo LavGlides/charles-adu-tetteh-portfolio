@@ -217,7 +217,7 @@ export function Contact() {
                   <Linkedin className="text-purple-400" size={20} />
                   <div>
                     <a
-                      href="https://www.linkedin.com/in/charles-adu-tetteh-00546a109"
+                      href="https://www.linkedin.com/in/charles-adu-tetteh"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-purple-300 hover:text-purple-200 transition-colors duration-200 hover:underline"
