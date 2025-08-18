@@ -177,7 +177,7 @@ export function Hero() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.a
-                    href="https://www.linkedin.com/in/charles-adu-tetteh-00546a109"
+                    href="https://www.linkedin.com/in/charles-adu-tetteh"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.3, rotate: 8 }}
