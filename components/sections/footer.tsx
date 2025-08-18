@@ -29,7 +29,7 @@ export function Footer() {
               <div className="flex space-x-4">
                 {[
                   {
-                    href: "https://www.linkedin.com/in/charles-adu-tetteh-00546a109",
+                    href: "https://www.linkedin.com/in/charles-adu-tetteh",
                     icon: Linkedin,
                     label: "LinkedIn",
                   },
