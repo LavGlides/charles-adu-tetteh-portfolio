@@ -15,6 +15,11 @@ export const metadata: Metadata = {
     "Dynamic full-stack developer and AWS Cloud expert, ready to transform your ideas into powerful software or launch your website online. With a Computer Science background and expertise in scalable web and mobile solutions, I am here to bring your vision to life. Available for hire in Ghana and globally..",
   keywords: [
     "Charles Adu Tetteh",
+    "Charles Adu T",
+    "Charles Adu",
+    "Charles Tetteh",
+    "Adu Tetteh",
+    "Web developer",
     "Full-Stack Developer",
     "AWS Cloud Expert",
     "React Developer",
