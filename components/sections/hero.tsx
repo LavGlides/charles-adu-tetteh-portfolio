@@ -75,7 +75,8 @@ export function Hero() {
           >
             <img
               src="/charles_passport_size.png"
-              alt="Charles Adu Tetteh"
+              alt="Charles Adu Tetteh – Full-Stack Developer and AWS Cloud Expert."
+
               className="w-full h-full rounded-full object-cover border-2 border-white/90"
               onError={(e) => {
                 e.currentTarget.src = "/placeholder-user.jpg";
@@ -122,6 +123,9 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
           >
+            <span className="sr-only">
+              Charles Adu Tetteh – Full-Stack Developer & AWS Cloud Expert in Ghana
+            </span>
             Charles Adu Tetteh
           </motion.h1>
 
@@ -143,6 +147,16 @@ export function Hero() {
             Experienced software engineer building performant apps with React, Next.js, and AWS. Focused on scalable architecture and cloud-first development. Proven expertise in delivering scalable
             enterprise solutions and training many professionals.
           </motion.p>
+
+          <p className="sr-only">
+            Charles Adu Tetteh is a software developer based in Ghana with a background in
+            computer science. He works across the full stack, building web and mobile
+            applications using technologies such as React, Next.js, Node.js, and cloud
+            services on AWS. His work includes scalable systems, business platforms, and
+            technical training for teams and individuals.
+          </p>
+
+
 
           <motion.div
             className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-8 sm:mb-12 px-2 sm:px-4"
