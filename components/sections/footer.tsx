@@ -39,7 +39,7 @@ export function Footer() {
                     label: "GitHub",
                   },
                   {
-                    href: "mailto:aducharlest@gmail.com",
+                    href: "mailto:hello@aducharlest.com",
                     icon: Mail,
                     label: "Email",
                   },
@@ -99,7 +99,7 @@ export function Footer() {
                   <Mail size={16} className="text-purple-400 flex-shrink-0" />
                   <span>
                     <a href="mailto:aducharlest@gmail.com">
-                      aducharlest@gmail.com
+                     hello@aducharlest.com
                     </a>
                   </span>
                 </motion.div>
