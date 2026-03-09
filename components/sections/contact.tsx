@@ -203,7 +203,7 @@ export function Contact() {
                   <Mail className="text-purple-400" size={20} />
                   <div className="text-gray-300">
                     <a href="mailto:aducharlest@gmail.com">
-                      aducharlest@gmail.com
+                      hello@aducharlest.com
                     </a>
                   </div>
                 </div>
@@ -444,19 +444,19 @@ export function Contact() {
                             </SelectTrigger>
                             <SelectContent className="bg-slate-700 border-slate-600">
                               <SelectItem value="under-5k">
-                                Under $5,000
+                                Under Ghc5,000
                               </SelectItem>
                               <SelectItem value="5k-10k">
-                                $5,000 - $10,000
+                                Ghc5,000 - Ghc10,000
                               </SelectItem>
                               <SelectItem value="10k-25k">
-                                $10,000 - $25,000
+                                Ghc10,000 - Ghc25,000
                               </SelectItem>
                               <SelectItem value="25k-50k">
-                                $25,000 - $50,000
+                                Ghc25,000 - Ghc50,000
                               </SelectItem>
                               <SelectItem value="over-50k">
-                                Over $50,000
+                                Over Ghc50,000
                               </SelectItem>
                               <SelectItem value="to-be-determined">
                                 To be determined
