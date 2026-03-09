@@ -225,7 +225,7 @@ export function Hero() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.a
-                    href="mailto:aducharlest@gmail.com"
+                    href="mailto:hello@aducharlest.com"
                     whileHover={{ scale: 1.3, rotate: 8 }}
                     className="text-gray-200 hover:text-white transition-colors duration-300"
                     aria-label="Send me an email"
