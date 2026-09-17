@@ -112,19 +112,16 @@ export function Projects() {
     }
 
     // Sort projects: Live projects with liveUrl first, then by featured, then by creation date
-    return filtered.sort((a, b) => {
-      // First priority: Live projects with liveUrl
+    return [...filtered].sort((a, b) => {
       const aIsLiveWithUrl = a.status === "DEPLOYED" && a.liveUrl;
       const bIsLiveWithUrl = b.status === "DEPLOYED" && b.liveUrl;
-      
+
       if (aIsLiveWithUrl && !bIsLiveWithUrl) return -1;
       if (!aIsLiveWithUrl && bIsLiveWithUrl) return 1;
-      
-      // Second priority: Featured projects
+
       if (a.featured && !b.featured) return -1;
       if (!a.featured && b.featured) return 1;
-      
-      // Third priority: Most recent projects
+
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
   }, [activeFilter, searchQuery, projects]);
@@ -327,13 +324,13 @@ export function Projects() {
                             </Badge>
                           </a>
                         ) : (
-                          <Badge
-                            className={`${getStatusColor(
-                              project.status
-                            )} text-white backdrop-blur-sm font-inter font-medium text-xs`}
-                          >
-                            {getStatusText(project.status)}
-                          </Badge>
+                        <Badge
+                          className={`${getStatusColor(
+                            project.status
+                          )} text-white backdrop-blur-sm font-inter font-medium text-xs`}
+                        >
+                          {getStatusText(project.status)}
+                        </Badge>
                         )}
                       </motion.div>
                       <motion.div
